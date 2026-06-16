@@ -1,57 +1,81 @@
-import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
-import { getPhases, getPlayers, getMyProfile } from '@/lib/queries'
-import LogoutButton from '@/app/logout-button'
+import { getDashboardStats } from '@/lib/queries'
 
-export default async function PanelPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+const STAGE_LABELS: [string, string][] = [
+  ['lead', 'Lead detectado'], ['first_contact', 'Primer contacto'], ['interested', 'Interesado'],
+  ['docs_requested', 'Doc. solicitada'], ['contract_sent', 'Contrato enviado'],
+  ['contract_signed', 'Contrato firmado'], ['initial_paid', 'Pago inicial'], ['active', 'Cliente activo'],
+]
 
-  const profile = await getMyProfile()
-  if (!profile || profile.status !== 'approved') redirect('/pendiente')
+function Kpi({ label, value, hint }: { label: string; value: number | string; hint?: string }) {
+  return (
+    <div className="bg-white border border-slate-200 rounded-2xl p-5 transition hover:shadow-[0_8px_24px_-10px_rgba(16,30,70,0.16)]">
+      <div className="text-[12px] font-semibold text-slate-500">{label}</div>
+      <div className="text-3xl font-extrabold tracking-tight mt-3 font-mono text-slate-900">{value}</div>
+      {hint && <div className="text-[11.5px] font-semibold text-slate-400 mt-2">{hint}</div>}
+    </div>
+  )
+}
 
-  // La familia va a su formulario / proceso
-  if (profile.role === 'family') redirect('/formulario')
-
-  const phases = await getPhases()
-  const players = await getPlayers()
+export default async function DashboardPage() {
+  const s = await getDashboardStats()
+  const maxStage = Math.max(1, ...STAGE_LABELS.map(([id]) => s.byStage[id] ?? 0))
 
   return (
-    <div className="min-h-screen bg-slate-50 p-8">
-      <div className="max-w-3xl mx-auto">
-        <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-slate-900 text-white grid place-items-center font-black text-xs">ADM</div>
-            <h1 className="text-xl font-bold text-slate-900">Conexion OK</h1>
+    <div className="max-w-5xl mx-auto px-8 py-7">
+      <div className="text-[11px] font-bold uppercase tracking-widest text-[#0F5EFF] mb-1.5">Centro de operaciones</div>
+      <h1 className="text-[26px] font-extrabold tracking-tight text-slate-900">Dashboard</h1>
+      <p className="text-slate-500 text-sm mt-1.5 mb-6">Visión global del negocio de becas · temporada 2025–26.</p>
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <Kpi label="Jugadores totales" value={s.total} hint="en cartera" />
+        <Kpi label="En proceso" value={s.enProceso} hint="activos en pipeline" />
+        <Kpi label="Clientes activos" value={s.activos} hint="proceso en marcha" />
+        <Kpi label="Universidades" value={s.universidades} hint="en base de datos" />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-4 mt-4">
+        <div className="bg-white border border-slate-200 rounded-2xl">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+            <h3 className="font-bold text-[14.5px] text-slate-900">Pipeline por fase</h3>
+            <Link href="/panel/captacion" className="text-[12.5px] font-semibold text-[#0F5EFF]">Ver Kanban →</Link>
           </div>
-          <div className="flex items-center gap-4">
-            {profile.is_superadmin && (
-              <Link href="/admin/solicitudes" className="text-sm font-semibold text-[#0F5EFF]">Solicitudes</Link>
-            )}
-            <LogoutButton />
+          <div className="p-5 flex flex-col gap-2.5">
+            {STAGE_LABELS.map(([id, label]) => {
+              const n = s.byStage[id] ?? 0
+              return (
+                <div key={id} className="flex items-center gap-3">
+                  <span className="text-[12.5px] font-medium text-slate-500 w-36 shrink-0">{label}</span>
+                  <div className="flex-1 h-7 rounded-lg bg-slate-100 overflow-hidden">
+                    <div className="h-full rounded-lg bg-gradient-to-r from-[#0F5EFF] to-[#39E6A5] flex items-center px-2.5 text-white text-[12px] font-bold font-mono"
+                      style={{ width: `${Math.max((n / maxStage) * 100, n > 0 ? 14 : 0)}%` }}>
+                      {n > 0 ? n : ''}
+                    </div>
+                  </div>
+                  <span className="text-[12px] font-bold text-slate-300 font-mono w-5 text-right">{n}</span>
+                </div>
+              )
+            })}
           </div>
         </div>
-        <p className="text-sm text-slate-500 mb-6">{profile.full_name || user.email} - rol <b>{profile.role}</b></p>
 
-        <h2 className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">Fases del workflow ({phases?.length ?? 0})</h2>
-        <ol className="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100 mb-8">
-          {phases?.map((p: any) => (
-            <li key={p.phase_order} className="px-4 py-2.5 text-sm flex gap-3">
-              <span className="font-mono text-slate-400 w-5">{p.phase_order}</span>
-              <span className="font-medium text-slate-800">{p.name}</span>
-            </li>
-          ))}
-        </ol>
-
-        <h2 className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">Jugadores ({players?.length ?? 0})</h2>
-        <div className="bg-white border border-slate-200 rounded-xl p-4 text-sm text-slate-500">
-          {players && players.length > 0
-            ? players.map((pl: any) => (
-                <div key={pl.id} className="py-1">{pl.first_name} {pl.last_name} - {pl.primary_position} - {pl.stage}</div>
-              ))
-            : 'Aun no hay jugadores.'}
+        <div className="bg-white border border-slate-200 rounded-2xl p-5">
+          <h3 className="font-bold text-[14.5px] text-slate-900 mb-4">Accesos rápidos</h3>
+          <div className="flex flex-col gap-2.5">
+            <Link href="/panel/jugadores" className="flex items-center justify-between px-4 py-3 rounded-xl border border-slate-200 hover:border-[#0F5EFF] hover:bg-slate-50 transition">
+              <span className="text-[13.5px] font-semibold text-slate-700">Ver jugadores</span>
+              <span className="text-slate-300">→</span>
+            </Link>
+            <Link href="/panel/captacion" className="flex items-center justify-between px-4 py-3 rounded-xl border border-slate-200 hover:border-[#0F5EFF] hover:bg-slate-50 transition">
+              <span className="text-[13.5px] font-semibold text-slate-700">Pipeline de captación</span>
+              <span className="text-slate-300">→</span>
+            </Link>
+          </div>
+          {s.total === 0 && (
+            <p className="text-[12px] text-slate-400 mt-4 leading-relaxed">
+              Aún no hay jugadores. En cuanto una familia complete el formulario, aparecerá aquí automáticamente.
+            </p>
+          )}
         </div>
       </div>
     </div>

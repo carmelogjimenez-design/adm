@@ -1,22 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 
-export async function getPhases() {
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('phases').select('phase_order, name, description').order('phase_order')
-  if (error) throw error
-  return data
-}
-
-export async function getPlayers() {
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('players')
-    .select('id, first_name, last_name, primary_position, stage, potential_score')
-    .order('created_at', { ascending: false })
-  if (error) throw error
-  return data
-}
+const PLAYER_FIELDS =
+  'id, first_name, last_name, primary_position, secondary_position, current_club, category, stage, potential_score, target_division, graduation_year, intake_completed, created_at'
 
 export async function getMyProfile() {
   const supabase = await createClient()
@@ -29,16 +14,6 @@ export async function getMyProfile() {
   return data
 }
 
-export async function getPendingUsers() {
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('id, full_name, requested_role, created_at')
-    .eq('status', 'pending').order('created_at', { ascending: true })
-  if (error) throw error
-  return data
-}
-
 export async function getMyPlayer() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -46,4 +21,45 @@ export async function getMyPlayer() {
   const { data } = await supabase
     .from('players').select('*').eq('family_profile_id', user.id).maybeSingle()
   return data
+}
+
+export async function getPendingUsers() {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, full_name, requested_role, created_at')
+    .eq('status', 'pending').order('created_at', { ascending: true })
+  if (error) throw error
+  return data ?? []
+}
+
+export async function getPlayers() {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('players').select(PLAYER_FIELDS).order('created_at', { ascending: false })
+  if (error) throw error
+  return data ?? []
+}
+
+export async function getDashboardStats() {
+  const supabase = await createClient()
+  const { data: players } = await supabase.from('players').select('id, stage')
+  const { count: universidades } = await supabase
+    .from('universities').select('id', { count: 'exact', head: true })
+  const { count: ofertas } = await supabase
+    .from('offers').select('id', { count: 'exact', head: true })
+
+  const list = players ?? []
+  const byStage: Record<string, number> = {}
+  for (const p of list) byStage[p.stage] = (byStage[p.stage] ?? 0) + 1
+  const activos = byStage['active'] ?? 0
+
+  return {
+    total: list.length,
+    activos,
+    enProceso: list.length - activos,
+    universidades: universidades ?? 0,
+    ofertas: ofertas ?? 0,
+    byStage,
+  }
 }
