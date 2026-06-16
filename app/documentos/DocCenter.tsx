@@ -3,6 +3,7 @@ import { useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import FamilyNav from '../FamilyNav'
+import { GUIAS } from '../guias'
 
 type Cat = { id: number; code: string; name: string; description: string | null; required: boolean; sort_order: number }
 type Doc = { id: string; category_id: number; name: string | null; status: string; storage_path: string | null; external_url: string | null }
@@ -155,6 +156,14 @@ export default function DocCenter({
                         <span className={'text-[10.5px] font-bold px-2 py-0.5 rounded-full ' + st.cls}>{st.label}</span>
                       </div>
                       {cat.description && <p className="text-[12px] text-slate-400 mt-0.5">{cat.description}</p>}
+                      {(() => { const g = GUIAS[cat.code]; if (!g) return null; return (
+                        <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+                          {g.info && <a href={g.info} target="_blank" rel="noopener" className="text-[11.5px] font-semibold grad-text">Cómo conseguirlo</a>}
+                          {g.info_naia && <a href={g.info_naia} target="_blank" rel="noopener" className="text-[11.5px] font-semibold grad-text">Guía NAIA</a>}
+                          {g.info_ncaa && <a href={g.info_ncaa} target="_blank" rel="noopener" className="text-[11.5px] font-semibold grad-text">Guía NCAA</a>}
+                          {g.ejemplo && <a href={g.ejemplo} target="_blank" rel="noopener" className="text-[11.5px] font-semibold text-slate-400 hover:text-slate-600">Ver ejemplo</a>}
+                        </div>
+                      )})()}
                       {doc && (
                         <button onClick={() => view(doc)} className="text-[12px] font-semibold grad-text mt-1.5 inline-flex items-center gap-1">
                           Ver {doc.external_url ? 'enlace' : 'archivo'} →
