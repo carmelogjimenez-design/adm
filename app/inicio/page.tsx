@@ -79,7 +79,7 @@ export default async function InicioPage() {
 
   const [phases, categories, docs] = await Promise.all([
     getPlayerPhases(player.id), getDocCategories(), getMyDocuments(player.id),
-  ])
+  ]) as [any[], any[], any[]]
   const total = phases.length || 15
   const done = phases.filter((p: any) => p.status === 'done').length
   const journeyPct = Math.round((done / total) * 100)
