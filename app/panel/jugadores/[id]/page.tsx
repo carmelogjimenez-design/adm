@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getPlayerById, getPlayerDocuments, getDocCategories } from '@/lib/queries'
+import { getPlayerById, getPlayerDocuments, getDocCategories, getPlayerPhases } from '@/lib/queries'
 import StageSelect from './StageSelect'
 import DocReview from './DocReview'
+import PhaseTimeline from './PhaseTimeline'
 
 const FOOT: Record<string, string> = { right: 'Derecho', left: 'Izquierdo', both: 'Ambos' }
 const REGION: Record<string, string> = { west: 'West Coast', east: 'East Coast', midwest: 'Midwest', south: 'Southern States' }
@@ -30,7 +31,7 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
   const p = await getPlayerById(id)
   if (!p) notFound()
 
-  const [docs, categories] = await Promise.all([getPlayerDocuments(id), getDocCategories()])
+  const [docs, categories, phases] = await Promise.all([getPlayerDocuments(id), getDocCategories(), getPlayerPhases(id)])
   const docByCat: Record<number, any> = Object.fromEntries(docs.map((d: any) => [d.category_id, d]))
   const items = categories.map((c: any) => ({ categoryId: c.id, name: c.name, required: c.required, doc: docByCat[c.id] ?? null }))
   const approved = items.filter(i => i.doc?.status === 'approved').length
@@ -56,6 +57,8 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
       </div>
 
       <div className="flex flex-col gap-4">
+        <PhaseTimeline phases={phases as any} />
+
         <Section title="Datos personales" delay={60}>
           <Field k="Nombre" v={`${p.first_name} ${p.last_name}`} />
           <Field k="Fecha nacimiento" v={p.birth_date} />

@@ -76,3 +76,13 @@ export async function getMyDocuments(playerId: string) {
     .select('id, category_id, name, status, storage_path, external_url, updated_at').eq('player_id', playerId)
   return data ?? []
 }
+
+export async function getPlayerPhases(playerId: string) {
+  const supabase = await createClient()
+  const { data } = await supabase.from('player_phases')
+    .select('id, status, phase_id, phases(phase_order, name, description)')
+    .eq('player_id', playerId)
+  return (data ?? []).slice().sort(
+    (a: any, b: any) => (a.phases?.phase_order ?? 0) - (b.phases?.phase_order ?? 0)
+  )
+}
