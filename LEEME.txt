@@ -1,70 +1,37 @@
 ========================================================
-  ADM - Capa de conexion Supabase + login
-  Archivos listos para subir al repositorio
+  ADM - Proyecto Next.js completo (base + conexion Supabase)
 ========================================================
 
-CONTENIDO (respeta estas carpetas tal cual):
+Este ZIP contiene el proyecto entero y buildeable. Sube TODO
+su contenido a la raiz del repositorio "adm".
 
-  middleware.ts                  <- va en la RAIZ del repo
-  lib/queries.ts
-  lib/supabase/client.ts
-  lib/supabase/server.ts
-  lib/supabase/middleware.ts
-  app/login/page.tsx
-  app/panel/page.tsx
+COMO SUBIRLO (igual que antes):
+  1. Descomprime el ZIP.
+  2. En GitHub:  Add file -> Upload files.
+  3. Arrastra TODO lo de dentro: las carpetas "app" y "lib",
+     y los archivos sueltos (package.json, tsconfig.json,
+     next.config.mjs, postcss.config.mjs, tailwind.config.ts,
+     middleware.ts, .gitignore).
+     NO subas este LEEME.txt.
+  4. Si GitHub avisa de que app/ o lib/ ya existen, perfecto:
+     los reemplaza/fusiona sin borrar nada.
+  5. Mensaje de commit (p.ej. "chore: base del proyecto Next.js")
+     -> Commit changes.
 
-  (Si tu proyecto usa carpeta "src/", mete lib/, app/ y
-   middleware.ts DENTRO de src/.)
+DESPUES:
+  - Vercel detectara Next.js y construira solo. Espera "Ready".
+  - Comprueba en Vercel -> Settings -> Environment Variables:
+      NEXT_PUBLIC_SUPABASE_URL
+      NEXT_PUBLIC_SUPABASE_ANON_KEY
+  - Asegura tu perfil admin en Supabase (SQL Editor), con tu UID
+    de Authentication -> Users:
 
---------------------------------------------------------
-COMO SUBIRLO A GITHUB (desde el navegador)
---------------------------------------------------------
+      insert into public.profiles (id, full_name, role)
+      values ('TU_UID', 'Carmelo', 'admin')
+      on conflict (id) do update set role = 'admin';
 
-1. Descomprime este ZIP en tu ordenador.
+  - Entra en  https://TU-DOMINIO.vercel.app/login  e inicia sesion.
+    Deberias ver /panel con tu rol admin y las 15 fases.
 
-2. En tu repositorio de GitHub pulsa:
-   Add file  ->  Upload files
-
-3. Arrastra a la zona de subida las carpetas "lib" y "app"
-   y el archivo "middleware.ts" (NO subas este LEEME.txt
-   ni el ZIP). Al arrastrar carpetas, GitHub mantiene las
-   subcarpetas automaticamente.
-
-4. Abajo, escribe un mensaje de commit (p.ej.
-   "feat: conexion Supabase + login") y pulsa
-   "Commit changes".
-
---------------------------------------------------------
-UN SOLO ARCHIVO QUE TIENES QUE EDITAR A MANO: package.json
---------------------------------------------------------
-
-No puedo incluir tu package.json (sobrescribiria tu config).
-Abrelo en GitHub con el lapiz (Edit) y, dentro del bloque
-"dependencies", anade estas dos lineas (cuidado con las comas):
-
-    "@supabase/ssr": "^0.5.2",
-    "@supabase/supabase-js": "^2.45.0",
-
-Commit. Vercel instalara las dependencias solo en el build.
-
---------------------------------------------------------
-DESPUES (en Supabase y Vercel)
---------------------------------------------------------
-
-A) Asegura tu perfil admin. En Supabase -> SQL Editor:
-   (copia tu UID de Authentication -> Users)
-
-   insert into public.profiles (id, full_name, role)
-   values ('PEGA_AQUI_TU_UID', 'Carmelo', 'admin')
-   on conflict (id) do update set role = 'admin';
-
-B) Comprueba en Vercel -> Settings -> Environment Variables
-   que existen:
-     NEXT_PUBLIC_SUPABASE_URL
-     NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-C) Espera a que Vercel ponga el deploy en "Ready" y entra en:
-     https://TU-DOMINIO.vercel.app/login
-   Inicia sesion con el email/contrasena de tu usuario de
-   Authentication. Deberias ver /panel con tu rol admin y
-   las 15 fases del workflow. Eso = todo conectado.
+NOTA: el archivo LEEME.txt que ya subiste antes puedes borrarlo
+desde GitHub (no molesta, pero no hace falta).
