@@ -13,7 +13,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   if (profile.role === 'family') redirect('/formulario')
 
   return (
-    <div className="min-h-screen bg-[#F1F3F8] flex">
+    <div className="app-aurora min-h-screen flex">
       <Sidebar
         name={profile.full_name || user.email || ''}
         role={profile.role || ''}

@@ -1,3 +1,50 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root{
+  --adm-blue:#0F5EFF;
+  --adm-green:#39E6A5;
+  --ink:#0A1733;
+  --ink-2:#5B6B8C;
+}
+body{ color: var(--ink); background:#FBFCFE; }
+
+/* ---- aurora ambient background for the app shell ---- */
+.app-aurora::before{
+  content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(55rem 38rem at 8% -12%, rgba(15,94,255,.10), transparent 60%),
+    radial-gradient(48rem 36rem at 102% -6%, rgba(57,230,165,.13), transparent 58%),
+    radial-gradient(40rem 40rem at 60% 116%, rgba(123,97,255,.06), transparent 60%);
+}
+.app-aurora > *{ position:relative; z-index:1; }
+
+/* ---- brand gradient helpers ---- */
+.grad-accent{ background-image:linear-gradient(120deg,#0F5EFF 0%,#39E6A5 100%); }
+.grad-text{
+  background-image:linear-gradient(100deg,#0F5EFF,#39E6A5);
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+}
+
+/* ---- cards with life ---- */
+.card-soft{ box-shadow:0 1px 2px rgba(16,24,40,.04), 0 14px 30px -18px rgba(16,30,70,.14); }
+.card-hover{ transition:transform .28s cubic-bezier(.22,1,.36,1), box-shadow .28s; }
+.card-hover:hover{ transform:translateY(-3px);
+  box-shadow:0 1px 2px rgba(16,24,40,.05), 0 28px 54px -22px rgba(15,94,255,.32); }
+.glow-brand{ box-shadow:0 16px 38px -16px rgba(15,94,255,.42); }
+
+/* ---- gradient progress bar ---- */
+.bar-track{ background:#EEF1F8; border-radius:999px; overflow:hidden; }
+.bar-fill{ background-image:linear-gradient(90deg,#0F5EFF,#39E6A5); border-radius:999px;
+  transition:width 1s cubic-bezier(.22,1,.36,1); }
+
+/* ---- entrance ---- */
+.fade-up{ animation:fadeUp .55s cubic-bezier(.22,1,.36,1) both; }
+@keyframes fadeUp{ from{opacity:0; transform:translateY(12px);} to{opacity:1; transform:none;} }
+
+@media (prefers-reduced-motion: reduce){
+  .fade-up{ animation:none!important }
+  .card-hover{ transition:none }
+  .bar-fill{ transition:none }
+}
