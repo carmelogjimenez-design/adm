@@ -4,6 +4,7 @@ import { getPlayerById, getPlayerDocuments, getDocCategories, getPlayerPhases } 
 import StageSelect from './StageSelect'
 import DocReview from './DocReview'
 import PhaseTimeline from './PhaseTimeline'
+import Matching from './Matching'
 
 const FOOT: Record<string, string> = { right: 'Derecho', left: 'Izquierdo', both: 'Ambos' }
 const REGION: Record<string, string> = { west: 'West Coast', east: 'East Coast', midwest: 'Midwest', south: 'Southern States' }
@@ -58,6 +59,8 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
 
       <div className="flex flex-col gap-4">
         <PhaseTimeline phases={phases as any} />
+
+        <Matching playerId={p.id} />
 
         <Section title="Datos personales" delay={60}>
           <Field k="Nombre" v={`${p.first_name} ${p.last_name}`} />
