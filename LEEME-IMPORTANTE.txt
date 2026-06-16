@@ -1,0 +1,41 @@
+=========================================================
+  ADM - PROYECTO COMPLETO Y ACTUALIZADO (todo en uno)
+=========================================================
+
+Esto es TODO el codigo correcto de la app. Reemplaza lo que
+tengas. Incluye: base + login + registro con rol + aprobacion
+de superadmin + formulario de la familia con firma.
+
+-----------------------------------------------------
+PASO 1 - BORRA LAS CARPETAS SOBRANTES DEL REPO
+-----------------------------------------------------
+En tu repo se colaron carpetas que NO deberian estar
+(por arrastrar la carpeta del zip en vez de su contenido).
+Hay que borrarlas. La forma facil:
+
+  1. Abre tu repo en github.com y pulsa la tecla "." (punto).
+     Se abre el editor github.dev.
+  2. En el arbol de la izquierda, borra TODA carpeta que
+     empiece por "adm-" (adm-aprob, adm-form, adm-files,
+     adm-proyecto, adm-registro, etc.) -> clic derecho -> Delete.
+     Tambien puedes borrar cualquier LEEME.txt suelto.
+  3. NO borres: app, lib, middleware.ts, package.json,
+     tsconfig.json, next.config.mjs, tailwind.config.ts,
+     postcss.config.mjs
+  4. Pulsa el icono de Source Control (ramas) -> mensaje
+     "limpieza" -> Commit & Push.
+
+-----------------------------------------------------
+PASO 2 - SUBE ESTE PROYECTO (su CONTENIDO, no la carpeta)
+-----------------------------------------------------
+  1. Descomprime este zip. Veras una carpeta "adm-completo".
+  2. ENTRA dentro de "adm-completo" (doble clic).
+  3. Dentro veras: app, lib, middleware.ts, package.json, etc.
+     SELECCIONA ESOS (no la carpeta de fuera) y arrastralos a
+     GitHub -> Add file -> Upload files.
+     >>> Importante: arrastra el CONTENIDO, nunca la carpeta
+         "adm-completo" entera. <<<
+  4. NO subas este LEEME-IMPORTANTE.txt.
+  5. Commit. Vercel desplegara solo.
+
+Quedara en Ready y la app tendra ya todo el flujo completo.
