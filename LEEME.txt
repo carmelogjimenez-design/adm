@@ -1,0 +1,70 @@
+========================================================
+  ADM - Capa de conexion Supabase + login
+  Archivos listos para subir al repositorio
+========================================================
+
+CONTENIDO (respeta estas carpetas tal cual):
+
+  middleware.ts                  <- va en la RAIZ del repo
+  lib/queries.ts
+  lib/supabase/client.ts
+  lib/supabase/server.ts
+  lib/supabase/middleware.ts
+  app/login/page.tsx
+  app/panel/page.tsx
+
+  (Si tu proyecto usa carpeta "src/", mete lib/, app/ y
+   middleware.ts DENTRO de src/.)
+
+--------------------------------------------------------
+COMO SUBIRLO A GITHUB (desde el navegador)
+--------------------------------------------------------
+
+1. Descomprime este ZIP en tu ordenador.
+
+2. En tu repositorio de GitHub pulsa:
+   Add file  ->  Upload files
+
+3. Arrastra a la zona de subida las carpetas "lib" y "app"
+   y el archivo "middleware.ts" (NO subas este LEEME.txt
+   ni el ZIP). Al arrastrar carpetas, GitHub mantiene las
+   subcarpetas automaticamente.
+
+4. Abajo, escribe un mensaje de commit (p.ej.
+   "feat: conexion Supabase + login") y pulsa
+   "Commit changes".
+
+--------------------------------------------------------
+UN SOLO ARCHIVO QUE TIENES QUE EDITAR A MANO: package.json
+--------------------------------------------------------
+
+No puedo incluir tu package.json (sobrescribiria tu config).
+Abrelo en GitHub con el lapiz (Edit) y, dentro del bloque
+"dependencies", anade estas dos lineas (cuidado con las comas):
+
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.45.0",
+
+Commit. Vercel instalara las dependencias solo en el build.
+
+--------------------------------------------------------
+DESPUES (en Supabase y Vercel)
+--------------------------------------------------------
+
+A) Asegura tu perfil admin. En Supabase -> SQL Editor:
+   (copia tu UID de Authentication -> Users)
+
+   insert into public.profiles (id, full_name, role)
+   values ('PEGA_AQUI_TU_UID', 'Carmelo', 'admin')
+   on conflict (id) do update set role = 'admin';
+
+B) Comprueba en Vercel -> Settings -> Environment Variables
+   que existen:
+     NEXT_PUBLIC_SUPABASE_URL
+     NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+C) Espera a que Vercel ponga el deploy en "Ready" y entra en:
+     https://TU-DOMINIO.vercel.app/login
+   Inicia sesion con el email/contrasena de tu usuario de
+   Authentication. Deberias ver /panel con tu rol admin y
+   las 15 fases del workflow. Eso = todo conectado.
