@@ -86,3 +86,12 @@ export async function getPlayerPhases(playerId: string) {
     (a: any, b: any) => (a.phases?.phase_order ?? 0) - (b.phases?.phase_order ?? 0)
   )
 }
+
+export async function getUniversities() {
+  const supabase = await createClient()
+  const { data } = await supabase.from('universities')
+    .select('id, name, division, conference, state, city, head_coach_name, coach_position, coach_email, coach_whatsapp, website, team_needs, coach_comment, adm_placements, adm_avg_award_usd, sevp_certified')
+    .order('adm_placements', { ascending: false })
+    .order('name', { ascending: true })
+  return data ?? []
+}

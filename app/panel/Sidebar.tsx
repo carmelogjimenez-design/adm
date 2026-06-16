@@ -8,11 +8,13 @@ const ICONS: Record<string, React.ReactNode> = {
   pipeline: <><path d="M3 5h18M3 12h18M3 19h18" /><circle cx="8" cy="5" r="1.6" fill="currentColor" /><circle cx="15" cy="12" r="1.6" fill="currentColor" /><circle cx="11" cy="19" r="1.6" fill="currentColor" /></>,
   players: <><circle cx="9" cy="8" r="3.2" /><path d="M3.5 20a5.5 5.5 0 0 1 11 0" /><circle cx="17" cy="9" r="2.6" /><path d="M16 14.5a4.5 4.5 0 0 1 5 4.5" /></>,
   requests: <><path d="M9 11l3 3 8-8M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11" /></>,
+  uni: <><path d="M3 21h18M5 21V8l7-4 7 4v13M9 21v-5h6v5M9 12h.01M15 12h.01" /></>,
 }
 const NAV = [
   { href: '/panel', label: 'Dashboard', icon: 'dashboard' },
   { href: '/panel/captacion', label: 'Captación', icon: 'pipeline' },
   { href: '/panel/jugadores', label: 'Jugadores', icon: 'players' },
+  { href: '/panel/universidades', label: 'Universidades', icon: 'uni' },
 ]
 
 export default function Sidebar({ name, role, isSuperadmin }: { name: string; role: string; isSuperadmin: boolean }) {
