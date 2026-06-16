@@ -12,9 +12,6 @@ export default async function PanelPage() {
   const profile = await getMyProfile()
   if (!profile || profile.status !== 'approved') redirect('/pendiente')
 
-  // La familia va a su formulario / proceso
-  if (profile.role === 'family') redirect('/formulario')
-
   const phases = await getPhases()
   const players = await getPlayers()
 
@@ -28,14 +25,20 @@ export default async function PanelPage() {
           </div>
           <div className="flex items-center gap-4">
             {profile.is_superadmin && (
-              <Link href="/admin/solicitudes" className="text-sm font-semibold text-[#0F5EFF]">Solicitudes</Link>
+              <Link href="/admin/solicitudes" className="text-sm font-semibold text-[#0F5EFF]">
+                Solicitudes
+              </Link>
             )}
             <LogoutButton />
           </div>
         </div>
-        <p className="text-sm text-slate-500 mb-6">{profile.full_name || user.email} - rol <b>{profile.role}</b></p>
+        <p className="text-sm text-slate-500 mb-6">
+          {profile.full_name || user.email} - rol <b>{profile.role}</b>
+        </p>
 
-        <h2 className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">Fases del workflow ({phases?.length ?? 0})</h2>
+        <h2 className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">
+          Fases del workflow ({phases?.length ?? 0})
+        </h2>
         <ol className="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100 mb-8">
           {phases?.map((p: any) => (
             <li key={p.phase_order} className="px-4 py-2.5 text-sm flex gap-3">
@@ -45,13 +48,17 @@ export default async function PanelPage() {
           ))}
         </ol>
 
-        <h2 className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">Jugadores ({players?.length ?? 0})</h2>
+        <h2 className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">
+          Jugadores ({players?.length ?? 0})
+        </h2>
         <div className="bg-white border border-slate-200 rounded-xl p-4 text-sm text-slate-500">
           {players && players.length > 0
             ? players.map((pl: any) => (
-                <div key={pl.id} className="py-1">{pl.first_name} {pl.last_name} - {pl.primary_position} - {pl.stage}</div>
+                <div key={pl.id} className="py-1">
+                  {pl.first_name} {pl.last_name} - {pl.primary_position} - {pl.stage}
+                </div>
               ))
-            : 'Aun no hay jugadores.'}
+            : 'Aun no hay jugadores. Crea uno desde el Table Editor para verlo aqui.'}
         </div>
       </div>
     </div>
