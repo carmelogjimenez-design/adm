@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
-const NAV: [string, string][] = [['/inicio', 'Inicio'], ['/mi-camino', 'Mi camino'], ['/documentos', 'Documentos']]
+const NAV: [string, string][] = [['/inicio', 'Inicio'], ['/mi-camino', 'Mi camino'], ['/documentos', 'Documentos'], ['/ayuda', 'Ayuda']]
 
 export default function FamilyNav() {
   const pathname = usePathname()
