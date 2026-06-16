@@ -10,7 +10,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
 
   const profile = await getMyProfile()
   if (!profile || profile.status !== 'approved') redirect('/pendiente')
-  if (profile.role === 'family') redirect('/formulario')
+  if (profile.role === 'family') redirect('/inicio')
 
   return (
     <div className="app-aurora min-h-screen flex">
