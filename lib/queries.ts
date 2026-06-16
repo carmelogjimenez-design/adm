@@ -48,18 +48,24 @@ export async function getDashboardStats() {
     .from('universities').select('id', { count: 'exact', head: true })
   const { count: ofertas } = await supabase
     .from('offers').select('id', { count: 'exact', head: true })
-
   const list = players ?? []
   const byStage: Record<string, number> = {}
   for (const p of list) byStage[p.stage] = (byStage[p.stage] ?? 0) + 1
   const activos = byStage['active'] ?? 0
+  return { total: list.length, activos, enProceso: list.length - activos, universidades: universidades ?? 0, ofertas: ofertas ?? 0, byStage }
+}
 
-  return {
-    total: list.length,
-    activos,
-    enProceso: list.length - activos,
-    universidades: universidades ?? 0,
-    ofertas: ofertas ?? 0,
-    byStage,
-  }
+export async function getDocCategories() {
+  const supabase = await createClient()
+  const { data } = await supabase.from('doc_categories').select('*').order('sort_order')
+  return data ?? []
+}
+
+export async function getMyDocuments(playerId: string) {
+  const supabase = await createClient()
+  const { data } = await supabase
+    .from('documents')
+    .select('id, category_id, name, status, storage_path, external_url, updated_at')
+    .eq('player_id', playerId)
+  return data ?? []
 }

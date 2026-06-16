@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
 type Player = Record<string, any> | null
@@ -129,7 +130,10 @@ export default function IntakeForm({
             <p className="text-sm text-slate-500 mt-2">
               Gracias {form.first_name}. Hemos recibido tu formulario y tu firma. Tu asesor de ADM revisara tu perfil y dara los siguientes pasos.
             </p>
-            <button onClick={() => setEditing(true)} className="mt-6 text-sm font-semibold text-[#0F5EFF]">
+            <Link href="/documentos" className="mt-6 inline-flex items-center justify-center w-full py-3 rounded-xl bg-[#0F5EFF] text-white font-semibold text-sm">
+              Ir a mis documentos →
+            </Link>
+            <button onClick={() => setEditing(true)} className="mt-3 text-sm font-semibold text-slate-400 hover:text-slate-700">
               Editar mis datos
             </button>
           </div>
