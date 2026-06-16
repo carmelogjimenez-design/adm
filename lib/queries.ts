@@ -95,3 +95,12 @@ export async function getUniversities() {
     .order('name', { ascending: true })
   return data ?? []
 }
+
+export async function getOffers(playerId: string) {
+  const supabase = await createClient()
+  const { data } = await supabase.from('offers')
+    .select('id, scholarship_pct, scholarship_amount, status, deadline, offered_at, notes, universities(name, division, state)')
+    .eq('player_id', playerId)
+    .order('offered_at', { ascending: false })
+  return data ?? []
+}
