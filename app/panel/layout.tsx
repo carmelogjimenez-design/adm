@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getMyProfile } from '@/lib/queries'
 import Sidebar from './Sidebar'
+import CommandPalette from '../CommandPalette'
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -20,6 +21,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
         isSuperadmin={!!profile.is_superadmin}
       />
       <main className="flex-1 min-w-0">{children}</main>
+      <CommandPalette />
     </div>
   )
 }
