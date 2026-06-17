@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 
 const PLAYER_FIELDS =
-  'id, first_name, last_name, primary_position, secondary_position, current_club, category, stage, potential_score, target_division, graduation_year, intake_completed, in_usa, created_at'
+  'id, first_name, last_name, primary_position, secondary_position, current_club, category, stage, potential_score, target_division, graduation_year, intake_completed, in_usa, is_alumni, cohort_year, notes, created_at'
 
 export async function getMyProfile() {
   const supabase = await createClient()
@@ -144,5 +144,14 @@ export async function getFinanceOverview() {
   const { data } = await supabase.from('payments')
     .select('id, concept, amount, currency, status, due_date, paid_at, players(id, first_name, last_name)')
     .order('due_date', { ascending: true })
+  return data ?? []
+}
+
+export async function getAlumni() {
+  const supabase = await createClient()
+  const { data } = await supabase.from('players')
+    .select('id, first_name, last_name, primary_position, target_division, cohort_year, notes')
+    .eq('is_alumni', true)
+    .order('cohort_year', { ascending: false })
   return data ?? []
 }

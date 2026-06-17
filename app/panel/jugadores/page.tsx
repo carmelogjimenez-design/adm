@@ -17,7 +17,7 @@ export default async function JugadoresPage({ searchParams }: { searchParams: Pr
           <p className="text-sm text-slate-500">Aún no hay jugadores. Cuando una familia complete el formulario, aparecerá aquí.</p>
         </div>
       ) : (
-        <JugadoresTable players={players} initialSegment={segmento === 'usa' ? 'usa' : segmento === 'proceso' ? 'proceso' : 'todos'} />
+        <JugadoresTable players={players} initialSegment={['usa', 'proceso', 'pasados'].includes(segmento || '') ? segmento! : 'todos'} />
       )}
     </div>
   )

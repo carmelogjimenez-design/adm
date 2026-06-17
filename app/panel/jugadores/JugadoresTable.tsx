@@ -12,21 +12,29 @@ const divLabel = (d: string | null) => d ? d.replace('NCAA_', '').replace('NJCAA
 export default function JugadoresTable({ players, initialSegment = 'todos' }: { players: any[]; initialSegment?: string }) {
   const [seg, setSeg] = useState(initialSegment)
   const [uni, setUni] = useState('')
+  const [year, setYear] = useState('')
   const [q, setQ] = useState('')
 
   const unis = useMemo(() => Array.from(new Set(players.map(p => p.university).filter(Boolean))).sort() as string[], [players])
+  const years = useMemo(() => Array.from(new Set(players.filter(p => p.is_alumni && p.cohort_year).map(p => p.cohort_year))).sort((a, b) => b - a) as number[], [players])
   const filtered = useMemo(() => {
     const t = q.trim().toLowerCase()
     return players.filter(p => {
-      if (seg === 'usa' && !p.in_usa) return false
-      if (seg === 'proceso' && p.in_usa) return false
+      if (seg === 'pasados') {
+        if (!p.is_alumni) return false
+        if (year && String(p.cohort_year) !== year) return false
+      } else {
+        if (p.is_alumni) return false
+        if (seg === 'usa' && !p.in_usa) return false
+        if (seg === 'proceso' && p.in_usa) return false
+      }
       if (uni && p.university !== uni) return false
       if (t && ![`${p.first_name} ${p.last_name}`, p.current_club, p.primary_position, p.university].some((x: any) => (x ?? '').toLowerCase().includes(t))) return false
       return true
     })
-  }, [players, seg, uni, q])
+  }, [players, seg, uni, year, q])
 
-  const SEGS: [string, string][] = [['todos', 'Todos'], ['proceso', 'Camino a EE. UU.'], ['usa', 'En EE. UU.']]
+  const SEGS: [string, string][] = [['todos', 'Todos'], ['proceso', 'Camino a EE. UU.'], ['usa', 'En EE. UU.'], ['pasados', 'Pasados']]
   const inp = 'px-3 py-2 rounded-lg border border-slate-200 text-[13px] focus:border-[#0F5EFF] focus:outline-none bg-white'
 
   return (
@@ -37,10 +45,20 @@ export default function JugadoresTable({ players, initialSegment = 'todos' }: { 
             <button key={v} onClick={() => setSeg(v)} className={'px-3 py-1.5 rounded-lg text-[12.5px] font-semibold transition ' + (seg === v ? 'grad-accent text-white' : 'text-slate-500 hover:text-slate-900')}>{l}</button>
           ))}
         </div>
-        <select value={uni} onChange={e => setUni(e.target.value)} className={inp + ' max-w-[220px]'}>
-          <option value="">Todas las universidades</option>
-          {unis.map(u => <option key={u} value={u}>{u}</option>)}
-        </select>
+        {seg === 'pasados' ? (
+          <>
+            <select value={year} onChange={e => setYear(e.target.value)} className={inp + ' max-w-[160px]'}>
+              <option value="">Todos los anos</option>
+              {years.map(y => <option key={y} value={String(y)}>{y}</option>)}
+            </select>
+            <Link href="/panel/alumni" className="px-3 py-2 rounded-lg border border-[#0F5EFF] text-[#0F5EFF] text-[12.5px] font-bold">Ver tablero por anos</Link>
+          </>
+        ) : (
+          <select value={uni} onChange={e => setUni(e.target.value)} className={inp + ' max-w-[220px]'}>
+            <option value="">Todas las universidades</option>
+            {unis.map(u => <option key={u} value={u}>{u}</option>)}
+          </select>
+        )}
         <div className="relative flex-1 min-w-[200px]">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-300"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
           <input value={q} onChange={e => setQ(e.target.value)} placeholder="Buscar jugador, club, universidad…" className={inp + ' w-full pl-10'} />
