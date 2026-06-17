@@ -54,7 +54,7 @@ export default async function DashboardPage() {
         <p className="text-slate-500 text-[15px] mt-1.5">Tu resumen del día y cómo va la promoción de jugadores.</p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 mt-7">
+      <div data-tour="kpis" className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 mt-7">
         <Kpi i={0} icon="players" label="Jugadores totales" value={s.total} hint="en cartera" href="/panel/jugadores" />
         <Kpi i={1} icon="flow" label="Camino a EE. UU." value={s.enProceso} hint="en proceso de captación" href="/panel/captacion" />
         <Kpi i={2} icon="check" label="En EE. UU." value={s.enUSA} hint="proceso cerrado · activos allí" color="#16B57C" href="/panel/jugadores?segmento=usa" />
@@ -68,7 +68,7 @@ export default async function DashboardPage() {
         <Kpi i={3} icon="alert" label="En riesgo" value={s.enRiesgo} hint="parados +14 días" color={s.enRiesgo > 0 ? '#EF4444' : '#0F172A'} href="/panel/captacion" />
       </div>
 
-      <div className="mt-4"><TasksWidget /></div>
+      <div data-tour="tasks" className="mt-4"><TasksWidget /></div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-4 mt-4">
         <div className="fade-up card-soft bg-white rounded-2xl border border-slate-100" style={{ animationDelay: '120ms' }}>

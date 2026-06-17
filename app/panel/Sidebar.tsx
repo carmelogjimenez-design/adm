@@ -43,14 +43,14 @@ export default function Sidebar({ name, role, isSuperadmin }: { name: string; ro
   }
 
   return (
-    <aside className="w-[252px] shrink-0 min-h-screen sticky top-0 flex flex-col bg-white/70 backdrop-blur-xl border-r border-slate-200/70">
+    <aside data-tour="menu" className="w-[252px] shrink-0 min-h-screen sticky top-0 flex flex-col bg-white/70 backdrop-blur-xl border-r border-slate-200/70">
       <div className="flex items-center gap-3 px-5 py-5">
         <div className="w-10 h-10 rounded-xl grad-accent text-white grid place-items-center font-black text-sm tracking-tight glow-brand">ADM</div>
         <div className="leading-tight">
           <div className="font-extrabold text-[15px] tracking-tight text-slate-900">ADM</div>
           <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">Operations</div>
         </div>
-        <div className="ml-auto"><NotificationBell align="left" /></div>
+        <div data-tour="bell" className="ml-auto"><NotificationBell align="left" /></div>
       </div>
 
       <nav className="px-3 flex flex-col gap-1 mt-1">
@@ -75,7 +75,10 @@ export default function Sidebar({ name, role, isSuperadmin }: { name: string; ro
               <div className="text-[11px] text-slate-400 capitalize">{role}</div>
             </div>
           </div>
-          <button onClick={logout} className="mt-2.5 w-full text-center text-[12px] font-semibold text-slate-400 hover:text-slate-700 border-t border-slate-100 pt-2">
+          <button onClick={() => window.dispatchEvent(new Event('adm-tour-start'))} className="mt-2.5 w-full text-center text-[12px] font-bold grad-text border-t border-slate-100 pt-2">
+            Ver tutorial
+          </button>
+          <button onClick={logout} className="mt-1.5 w-full text-center text-[12px] font-semibold text-slate-400 hover:text-slate-700">
             Cerrar sesión
           </button>
         </div>
