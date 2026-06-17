@@ -19,6 +19,7 @@ export default function NotificationBell({ align = 'right' }: { align?: 'right' 
   const [items, setItems] = useState<any[]>([])
   const [uid, setUid] = useState<string | null>(null)
   const [seen, setSeen] = useState<string>(new Date(0).toISOString())
+  const [tasks, setTasks] = useState<any[]>([])
   const [open, setOpen] = useState(false)
   const box = useRef<HTMLDivElement>(null)
 
@@ -26,12 +27,15 @@ export default function NotificationBell({ align = 'right' }: { align?: 'right' 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
     setUid(user.id)
-    const [{ data: prof }, { data: acts }] = await Promise.all([
+    const todayEnd = new Date(); todayEnd.setHours(23, 59, 59, 999)
+    const [{ data: prof }, { data: acts }, { data: tks }] = await Promise.all([
       supabase.from('profiles').select('notifications_seen_at').eq('id', user.id).single(),
       supabase.from('activity_log').select('id, action, detail, created_at, actor_id').order('created_at', { ascending: false }).limit(25),
+      supabase.from('tasks').select('id, title, due_date, priority').neq('status', 'done').lte('due_date', todayEnd.toISOString().slice(0, 10)).order('due_date').limit(10),
     ])
     if (prof?.notifications_seen_at) setSeen(prof.notifications_seen_at)
     setItems(acts ?? [])
+    setTasks(tks ?? [])
   }
   useEffect(() => {
     load()
@@ -41,15 +45,21 @@ export default function NotificationBell({ align = 'right' }: { align?: 'right' 
     return () => { clearInterval(t); document.removeEventListener('mousedown', onClick) }
   }, [])
 
-  const unread = items.filter(a => a.actor_id !== uid && new Date(a.created_at) > new Date(seen)).length
+  const unreadActivity = items.filter(a => a.actor_id !== uid && new Date(a.created_at) > new Date(seen)).length
+  const unread = unreadActivity + tasks.length
 
   async function toggle() {
     const willOpen = !open
     setOpen(willOpen)
-    if (willOpen && unread > 0) {
+    if (willOpen && unreadActivity > 0) {
       await supabase.rpc('mark_notifications_seen')
       setSeen(new Date().toISOString())
     }
+  }
+
+  async function doneTask(id: string) {
+    setTasks(ts => ts.filter(t => t.id !== id))
+    await supabase.from('tasks').update({ status: 'done' }).eq('id', id)
   }
 
   return (
@@ -60,6 +70,18 @@ export default function NotificationBell({ align = 'right' }: { align?: 'right' 
       </button>
       {open && (
         <div className={'absolute mt-2 w-[320px] max-h-[400px] overflow-y-auto bg-white rounded-2xl border border-slate-100 card-soft z-50 ' + (align === 'right' ? 'right-0' : 'left-0')}>
+          {tasks.length > 0 && (
+            <div className="border-b border-slate-100">
+              <div className="px-4 pt-3 pb-1 text-[12px] font-bold uppercase tracking-[0.12em] grad-text">Para hoy</div>
+              {tasks.map(tk => (
+                <div key={tk.id} className="flex items-center gap-3 px-4 py-2.5">
+                  <button onClick={() => doneTask(tk.id)} className="w-4 h-4 rounded border border-slate-300 hover:border-[#0F5EFF] shrink-0" />
+                  <span className="flex-1 min-w-0 text-[13px] text-slate-700 truncate">{tk.title}</span>
+                  {tk.due_date && <span className="text-[10.5px] font-semibold text-slate-400 shrink-0">{new Date(tk.due_date).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' })}</span>}
+                </div>
+              ))}
+            </div>
+          )}
           <div className="px-4 py-3 border-b border-slate-100 text-[12px] font-bold uppercase tracking-[0.12em] grad-text">Novedades</div>
           {items.length === 0 ? (
             <div className="px-4 py-8 text-center text-[13px] text-slate-400">Sin novedades todavía</div>

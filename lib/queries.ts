@@ -50,10 +50,11 @@ export async function getPlayerDocuments(playerId: string) {
 
 export async function getDashboardStats() {
   const supabase = await createClient()
-  const { data: players } = await supabase.from('players').select('id, stage, target_division')
+  const { data: players } = await supabase.from('players').select('id, stage, target_division, updated_at')
   const { count: universidades } = await supabase.from('universities').select('id', { count: 'exact', head: true })
-  const { count: ofertas } = await supabase.from('offers').select('id', { count: 'exact', head: true })
+  const { data: offersRows } = await supabase.from('offers').select('id, offered_at')
   const list = players ?? []
+  const offers = offersRows ?? []
   const byStage: Record<string, number> = {}
   const byDivision: Record<string, number> = {}
   for (const p of list) {
@@ -61,7 +62,16 @@ export async function getDashboardStats() {
     if (p.target_division) byDivision[p.target_division] = (byDivision[p.target_division] ?? 0) + 1
   }
   const activos = byStage['active'] ?? 0
-  return { total: list.length, activos, enProceso: list.length - activos, universidades: universidades ?? 0, ofertas: ofertas ?? 0, byStage, byDivision }
+  const now = Date.now()
+  const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0)
+  const ofertasMes = offers.filter(o => o.offered_at && new Date(o.offered_at) >= monthStart).length
+  const enRiesgo = list.filter(p => p.stage !== 'active' && p.updated_at && (now - new Date(p.updated_at).getTime()) > 14 * 86400000).length
+  const conversion = list.length ? Math.round((activos / list.length) * 100) : 0
+  return {
+    total: list.length, activos, enProceso: list.length - activos,
+    universidades: universidades ?? 0, ofertas: offers.length, ofertasMes, enRiesgo, conversion,
+    byStage, byDivision,
+  }
 }
 
 export async function getDocCategories() {
