@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import NotificationBell from '../NotificationBell'
 
 const ICONS: Record<string, React.ReactNode> = {
   dashboard: <><rect x="3" y="3" width="7" height="9" rx="1.5" /><rect x="14" y="3" width="7" height="5" rx="1.5" /><rect x="14" y="12" width="7" height="9" rx="1.5" /><rect x="3" y="16" width="7" height="5" rx="1.5" /></>,
@@ -47,6 +48,7 @@ export default function Sidebar({ name, role, isSuperadmin }: { name: string; ro
           <div className="font-extrabold text-[15px] tracking-tight text-slate-900">ADM</div>
           <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">Operations</div>
         </div>
+        <div className="ml-auto"><NotificationBell align="left" /></div>
       </div>
 
       <nav className="px-3 flex flex-col gap-1 mt-1">

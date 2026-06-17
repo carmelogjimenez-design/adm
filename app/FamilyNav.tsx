@@ -2,8 +2,9 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import NotificationBell from './NotificationBell'
 
-const NAV: [string, string][] = [['/inicio', 'Inicio'], ['/mi-camino', 'Mi camino'], ['/documentos', 'Documentos'], ['/ayuda', 'Ayuda']]
+const NAV: [string, string][] = [['/inicio', 'Inicio'], ['/mi-camino', 'Mi camino'], ['/documentos', 'Documentos'], ['/mensajes', 'Mensajes'], ['/ayuda', 'Ayuda']]
 
 export default function FamilyNav() {
   const pathname = usePathname()
@@ -27,6 +28,7 @@ export default function FamilyNav() {
             )
           })}
         </nav>
+        <NotificationBell align="right" />
         <button onClick={logout} className="text-[12.5px] font-semibold text-slate-400 hover:text-slate-700 shrink-0">Salir</button>
       </div>
     </header>

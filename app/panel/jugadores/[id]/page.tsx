@@ -6,6 +6,7 @@ import DocReview from './DocReview'
 import PhaseTimeline from './PhaseTimeline'
 import Matching from './Matching'
 import OffersEditor from './OffersEditor'
+import MessageThread from '../../../MessageThread'
 
 const FOOT: Record<string, string> = { right: 'Derecho', left: 'Izquierdo', both: 'Ambos' }
 const REGION: Record<string, string> = { west: 'West Coast', east: 'East Coast', midwest: 'Midwest', south: 'Southern States' }
@@ -64,6 +65,8 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
         <Matching playerId={p.id} />
 
         <OffersEditor playerId={p.id} />
+
+        <MessageThread playerId={p.id} height={340} />
 
         <Section title="Datos personales" delay={60}>
           <Field k="Nombre" v={`${p.first_name} ${p.last_name}`} />
