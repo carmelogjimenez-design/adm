@@ -9,6 +9,7 @@ import PhaseTimeline from './PhaseTimeline'
 import Matching from './Matching'
 import OffersEditor from './OffersEditor'
 import FinanceEditor from './FinanceEditor'
+import ContractCard from './ContractCard'
 import MessageThread from '../../../MessageThread'
 
 const FOOT: Record<string, string> = { right: 'Derecho', left: 'Izquierdo', both: 'Ambos' }
@@ -69,6 +70,8 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
         <Matching playerId={p.id} />
 
         <OffersEditor playerId={p.id} />
+
+        <ContractCard playerId={p.id} player={p} />
 
         <FinanceEditor playerId={p.id} />
 

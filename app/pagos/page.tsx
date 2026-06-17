@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { getMyProfile, getMyPlayer, getContract, getPayments } from '@/lib/queries'
 import FamilyNav from '../FamilyNav'
+import ContractSign from './ContractSign'
 
 const money = (n: number, c = 'EUR') => new Intl.NumberFormat('es-ES', { style: 'currency', currency: c, maximumFractionDigits: 0 }).format(n)
 const CONTRACT: Record<string, { label: string; cls: string }> = {
@@ -42,6 +43,7 @@ export default async function PagosPage() {
   }
 
   const [contract, payments] = await Promise.all([getContract(player.id), getPayments(player.id)])
+  const { data: contractFull } = await supabase.from('contracts').select('id, status, terms, family_signature, signer_name, signed_at').eq('player_id', player.id).order('created_at', { ascending: false }).limit(1).maybeSingle()
   const cur = (payments[0] as any)?.currency || contract?.currency || 'EUR'
   const paid = payments.filter((p: any) => p.status === 'paid').reduce((s: number, p: any) => s + Number(p.amount || 0), 0)
   const pending = payments.filter((p: any) => ['pending', 'overdue'].includes(p.status)).reduce((s: number, p: any) => s + Number(p.amount || 0), 0)
@@ -69,6 +71,8 @@ export default async function PagosPage() {
             </div>
           ) : <p className="text-[13px] text-slate-400 mt-1.5">Tu contrato aún no está disponible. Tu asesor lo preparará en breve.</p>}
         </div>
+
+        {contractFull && <ContractSign contract={contractFull} />}
 
         {/* resumen cuotas */}
         <div className="fade-up grid grid-cols-2 gap-3.5 mt-4" style={{ animationDelay: '60ms' }}>
