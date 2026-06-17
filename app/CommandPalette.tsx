@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
@@ -8,6 +9,8 @@ const DIV: Record<string, string> = { NCAA_D1: 'D1', NCAA_D2: 'D2', NCAA_D3: 'D3
 export default function CommandPalette() {
   const supabase = createClient()
   const router = useRouter()
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
   const [open, setOpen] = useState(false)
   const [q, setQ] = useState('')
   const [players, setPlayers] = useState<any[]>([])
@@ -42,8 +45,8 @@ export default function CommandPalette() {
 
   function go(href: string) { setOpen(false); router.push(href) }
 
-  if (!open) return null
-  return (
+  if (!mounted || !open) return null
+  return createPortal(
     <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[12vh] px-4" onMouseDown={() => setOpen(false)}>
       <div className="fixed inset-0" style={{ background: 'rgba(15,23,42,0.55)' }} />
       <div className="relative w-full max-w-xl rounded-2xl border border-slate-100 shadow-2xl overflow-hidden isolate" style={{ background: '#ffffff' }} onMouseDown={e => e.stopPropagation()}>
@@ -88,6 +91,7 @@ export default function CommandPalette() {
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

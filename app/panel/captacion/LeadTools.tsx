@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import * as XLSX from 'xlsx'
@@ -28,6 +29,8 @@ export default function LeadTools() {
   const router = useRouter()
   const [mode, setMode] = useState<null | 'manual' | 'excel'>(null)
   const [busy, setBusy] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
 
   // ---- manual ----
   const [m, setM] = useState({ first_name: '', last_name: '', primary_position: '', current_club: '', target_division: '', budget_range: '', phone: '', email: '', highlight_video_url: '' })
@@ -124,7 +127,7 @@ export default function LeadTools() {
       <button onClick={() => setMode('manual')} className="px-3.5 py-2 rounded-xl grad-accent text-white text-[13px] font-bold glow-brand">+ Nuevo lead</button>
       <button onClick={() => setMode('excel')} className="px-3.5 py-2 rounded-xl border border-slate-200 text-slate-600 text-[13px] font-semibold bg-white">Importar Excel</button>
 
-      {mode && (
+      {mounted && mode && createPortal(
         <div className="fixed inset-0 z-[120] flex items-start justify-center pt-[8vh] px-4" onMouseDown={() => !busy && setMode(null)}>
           <div className="fixed inset-0" style={{ background: 'rgba(15,23,42,0.55)' }} />
           <div className="relative w-full max-w-2xl rounded-2xl border border-slate-100 card-soft max-h-[82vh] overflow-y-auto isolate" style={{ background: '#ffffff' }} onMouseDown={e => e.stopPropagation()}>
@@ -190,7 +193,8 @@ export default function LeadTools() {
               </div>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
