@@ -6,6 +6,7 @@ import DocReview from './DocReview'
 import PhaseTimeline from './PhaseTimeline'
 import Matching from './Matching'
 import OffersEditor from './OffersEditor'
+import FinanceEditor from './FinanceEditor'
 import MessageThread from '../../../MessageThread'
 
 const FOOT: Record<string, string> = { right: 'Derecho', left: 'Izquierdo', both: 'Ambos' }
@@ -65,6 +66,8 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
         <Matching playerId={p.id} />
 
         <OffersEditor playerId={p.id} />
+
+        <FinanceEditor playerId={p.id} />
 
         <MessageThread playerId={p.id} height={340} />
 

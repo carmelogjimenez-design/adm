@@ -104,3 +104,25 @@ export async function getOffers(playerId: string) {
     .order('offered_at', { ascending: false })
   return data ?? []
 }
+
+export async function getContract(playerId: string) {
+  const supabase = await createClient()
+  const { data } = await supabase.from('contracts')
+    .select('id, status, amount, currency, sent_at, signed_at, expires_at, document_url')
+    .eq('player_id', playerId).order('created_at', { ascending: false }).limit(1).maybeSingle()
+  return data
+}
+export async function getPayments(playerId: string) {
+  const supabase = await createClient()
+  const { data } = await supabase.from('payments')
+    .select('id, concept, amount, currency, status, due_date, paid_at')
+    .eq('player_id', playerId).order('due_date', { ascending: true })
+  return data ?? []
+}
+export async function getFinanceOverview() {
+  const supabase = await createClient()
+  const { data } = await supabase.from('payments')
+    .select('id, concept, amount, currency, status, due_date, paid_at, players(id, first_name, last_name)')
+    .order('due_date', { ascending: true })
+  return data ?? []
+}
