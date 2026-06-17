@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { openInvoicePrint } from '@/lib/invoicePdf'
 
 const money = (n: number, c = 'EUR') => new Intl.NumberFormat('es-ES', { style: 'currency', currency: c, maximumFractionDigits: 0 }).format(n)
 const CSTATUS: [string, string][] = [['draft', 'Borrador'], ['sent', 'Enviado'], ['signed', 'Firmado'], ['active', 'Activo'], ['expired', 'Caducado']]
@@ -10,6 +11,8 @@ export default function FinanceEditor({ playerId }: { playerId: string }) {
   const supabase = createClient()
   const router = useRouter()
   const [contract, setContract] = useState<any>(null)
+  const [player, setPlayer] = useState<any>(null)
+  const [invNo, setInvNo] = useState<Record<string, string>>({})
   const [pays, setPays] = useState<any[]>([])
   const [cAmount, setCAmount] = useState('')
   const [cStatus, setCStatus] = useState('draft')
@@ -17,11 +20,13 @@ export default function FinanceEditor({ playerId }: { playerId: string }) {
   const [busy, setBusy] = useState(false)
 
   async function load() {
-    const [{ data: c }, { data: p }] = await Promise.all([
+    const [{ data: c }, { data: p }, { data: pl }] = await Promise.all([
       supabase.from('contracts').select('*').eq('player_id', playerId).order('created_at', { ascending: false }).limit(1).maybeSingle(),
-      supabase.from('payments').select('id, concept, amount, currency, status, due_date, paid_at').eq('player_id', playerId).order('due_date'),
+      supabase.from('payments').select('id, concept, amount, currency, status, due_date, paid_at, invoice_number, invoice_at').eq('player_id', playerId).order('due_date'),
+      supabase.from('players').select('first_name, last_name, contact_name, dni, address, contact_email').eq('id', playerId).maybeSingle(),
     ])
-    setContract(c); setPays(p ?? [])
+    setContract(c); setPays(p ?? []); setPlayer(pl)
+    setInvNo(Object.fromEntries((p ?? []).map((x: any) => [x.id, x.invoice_number || `${new Date().getFullYear()}/`])))
     if (c) { setCAmount(c.amount ?? ''); setCStatus(c.status ?? 'draft') }
   }
   useEffect(() => { load() }, [playerId])
@@ -48,6 +53,18 @@ export default function FinanceEditor({ playerId }: { playerId: string }) {
     const paid = p.status === 'paid'
     await supabase.from('payments').update({ status: paid ? 'pending' : 'paid', paid_at: paid ? null : new Date().toISOString() }).eq('id', p.id)
     load(); router.refresh()
+  }
+  async function invoice(p: any) {
+    const num = (invNo[p.id] ?? '').trim()
+    if (!num || num.endsWith('/')) { alert('Escribe el número de factura (ej. 2026/6)'); return }
+    const { error } = await supabase.from('payments').update({ invoice_number: num, invoice_at: new Date().toISOString() }).eq('id', p.id)
+    if (error) { alert(error.message); return }
+    const clientName = player?.contact_name || `${player?.first_name ?? ''} ${player?.last_name ?? ''}`.trim()
+    openInvoicePrint({
+      number: num, client_name: clientName, client_dni: player?.dni || '', client_address: player?.address || '',
+      concept: p.concept || 'Servicios de asesoramiento ADM', base: Number(p.amount || 0), currency: p.currency || 'EUR',
+    })
+    load()
   }
   async function delPay(id: string) { if (confirm('¿Eliminar cuota?')) { await supabase.from('payments').delete().eq('id', id); load(); router.refresh() } }
 
@@ -81,6 +98,9 @@ export default function FinanceEditor({ playerId }: { playerId: string }) {
               </button>
               <span className="flex-1 min-w-[120px] text-[13px] font-semibold text-slate-800">{p.concept || 'Cuota'}{p.due_date ? <span className={'font-normal ' + (overdue ? 'text-red-500' : 'text-slate-400')}> · {new Date(p.due_date).toLocaleDateString('es-ES')}{overdue ? ' (vencida)' : ''}</span> : ''}</span>
               <span className="text-[13px] font-extrabold text-slate-900 tabular-nums">{money(Number(p.amount || 0), p.currency || 'EUR')}</span>
+              <input value={invNo[p.id] ?? ''} onChange={e => setInvNo(s => ({ ...s, [p.id]: e.target.value }))} placeholder="Nº factura"
+                className="w-24 px-2 py-1 rounded-md border border-slate-200 text-[11.5px] focus:border-[#0F5EFF] focus:outline-none" title="Número de factura (lo escribes tú)" />
+              <button onClick={() => invoice(p)} className="text-[11.5px] font-bold grad-text whitespace-nowrap" title={p.invoice_number ? 'Re-descargar factura ' + p.invoice_number : 'Generar factura'}>{p.invoice_number ? 'Factura ✓' : 'Factura'}</button>
               <button onClick={() => delPay(p.id)} className="text-[11.5px] font-semibold text-red-500">Eliminar</button>
             </div>
           )
