@@ -10,6 +10,7 @@ import Matching from './Matching'
 import OffersEditor from './OffersEditor'
 import FinanceEditor from './FinanceEditor'
 import ContractCard from './ContractCard'
+import StatsManager from '../../../estadisticas/StatsManager'
 import MessageThread from '../../../MessageThread'
 
 const FOOT: Record<string, string> = { right: 'Derecho', left: 'Izquierdo', both: 'Ambos' }
@@ -74,6 +75,8 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
         <ContractCard playerId={p.id} player={p} />
 
         <FinanceEditor playerId={p.id} />
+
+        <StatsManager playerId={p.id} />
 
         <MessageThread playerId={p.id} height={340} />
 
