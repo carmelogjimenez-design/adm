@@ -2,7 +2,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getPlayerById, getPlayerDocuments, getDocCategories, getPlayerPhases } from '@/lib/queries'
 import StageSelect from './StageSelect'
-import DocReview from './DocReview'
+import AdminDocs from './AdminDocs'
+import PlayerEdit from './PlayerEdit'
 import PhaseTimeline from './PhaseTimeline'
 import Matching from './Matching'
 import OffersEditor from './OffersEditor'
@@ -36,9 +37,7 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
   if (!p) notFound()
 
   const [docs, categories, phases] = await Promise.all([getPlayerDocuments(id), getDocCategories(), getPlayerPhases(id)])
-  const docByCat: Record<number, any> = Object.fromEntries(docs.map((d: any) => [d.category_id, d]))
-  const items = categories.map((c: any) => ({ categoryId: c.id, name: c.name, required: c.required, doc: docByCat[c.id] ?? null }))
-  const approved = items.filter(i => i.doc?.status === 'approved').length
+  const approved = docs.filter((d: any) => d.status === 'approved').length
 
   return (
     <div className="max-w-4xl mx-auto px-8 py-8">
@@ -61,6 +60,8 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
       </div>
 
       <div className="flex flex-col gap-4">
+        <PlayerEdit player={p} />
+
         <PhaseTimeline phases={phases as any} />
 
         <Matching playerId={p.id} />
@@ -129,7 +130,7 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
             <h2 className="text-[11px] font-bold uppercase tracking-[0.14em] grad-text inline-block">Documentos</h2>
             <span className="text-[12px] font-bold font-mono text-slate-400 tabular-nums">{approved}/{categories.length} aprobados</span>
           </div>
-          <DocReview items={items} />
+          <AdminDocs playerId={p.id} categories={categories as any} initialDocs={docs as any} />
         </div>
       </div>
     </div>
