@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getMyProfile, getMyPlayer, getPlayerPhases, getDocCategories, getMyDocuments, getOffers } from '@/lib/queries'
 import FamilyNav from '../FamilyNav'
 import CaminoHorizontal from '../CaminoHorizontal'
+import OffersCompare from '../OffersCompare'
 
 const DIV: Record<string, string> = { NCAA_D1: 'NCAA D1', NCAA_D2: 'NCAA D2', NCAA_D3: 'NCAA D3', NAIA: 'NAIA', NJCAA: 'JUCO' }
 const OFFER_ST: Record<string, { label: string; cls: string }> = {
@@ -137,28 +138,10 @@ export default async function InicioPage() {
               <p className="text-[13px] text-slate-400 mt-1.5 max-w-md mx-auto">Cuando una universidad se interese, aparecerá aquí. Completa tu perfil y tus documentos para que los coaches te vean. 💪</p>
             </div>
           ) : (
-            <div className="flex flex-col gap-2.5">
-              {offers.map((o: any) => {
-                const st = OFFER_ST[o.status] ?? OFFER_ST.received
-                const uni = Array.isArray(o.universities) ? o.universities[0] : o.universities
-                return (
-                  <div key={o.id} className="card-soft bg-white rounded-2xl border border-[#39E6A5]/40 p-4 flex items-center gap-4 flex-wrap">
-                    <div className="w-11 h-11 rounded-xl grad-accent text-white grid place-items-center shrink-0 glow-brand">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-5 h-5"><path d="M3 9l9-5 9 5-9 5-9-5z" /><path d="M21 9v5M7 11.5V16c0 1 2.5 2.5 5 2.5s5-1.5 5-2.5v-4.5" /></svg>
-                    </div>
-                    <div className="flex-1 min-w-[160px]">
-                      <div className="text-[15px] font-extrabold text-slate-900">{uni?.name ?? 'Universidad'}</div>
-                      <div className="text-[12px] text-slate-400">{uni?.division ? DIV[uni.division] : ''}{uni?.state ? ` · ${uni.state}` : ''}</div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      {o.scholarship_pct != null && <div className="text-[22px] font-extrabold tracking-tight grad-text leading-none">{o.scholarship_pct}%</div>}
-                      <div className="text-[11px] text-slate-400 mt-0.5">beca</div>
-                    </div>
-                    <span className={'text-[10.5px] font-bold px-2.5 py-1 rounded-full shrink-0 ' + st.cls}>{st.label}</span>
-                  </div>
-                )
-              })}
-            </div>
+            <>
+              {liveOffers.length > 1 && <p className="text-[12.5px] text-slate-400 mb-2">Compara y elige la que más te convenga.</p>}
+              <OffersCompare offers={liveOffers} />
+            </>
           )}
         </div>
 

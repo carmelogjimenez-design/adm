@@ -99,7 +99,7 @@ export async function getUniversities() {
 export async function getOffers(playerId: string) {
   const supabase = await createClient()
   const { data } = await supabase.from('offers')
-    .select('id, scholarship_pct, scholarship_amount, status, deadline, offered_at, notes, universities(name, division, state)')
+    .select('id, scholarship_pct, scholarship_amount, status, deadline, offered_at, notes, universities(name, division, state, annual_cost)')
     .eq('player_id', playerId)
     .order('offered_at', { ascending: false })
   return data ?? []
