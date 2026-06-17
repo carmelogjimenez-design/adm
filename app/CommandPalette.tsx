@@ -45,8 +45,8 @@ export default function CommandPalette() {
   if (!open) return null
   return (
     <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[12vh] px-4" onMouseDown={() => setOpen(false)}>
-      <div className="absolute inset-0 bg-slate-900/30 backdrop-blur-sm" />
-      <div className="relative w-full max-w-xl bg-white rounded-2xl border border-slate-100 shadow-2xl overflow-hidden" onMouseDown={e => e.stopPropagation()}>
+      <div className="fixed inset-0" style={{ background: 'rgba(15,23,42,0.55)' }} />
+      <div className="relative w-full max-w-xl rounded-2xl border border-slate-100 shadow-2xl overflow-hidden isolate" style={{ background: '#ffffff' }} onMouseDown={e => e.stopPropagation()}>
         <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-100">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 text-slate-300"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
           <input ref={inputRef} value={q} onChange={e => setQ(e.target.value)} placeholder="Buscar jugadores y universidades…"

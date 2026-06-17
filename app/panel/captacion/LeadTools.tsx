@@ -125,10 +125,10 @@ export default function LeadTools() {
       <button onClick={() => setMode('excel')} className="px-3.5 py-2 rounded-xl border border-slate-200 text-slate-600 text-[13px] font-semibold bg-white">Importar Excel</button>
 
       {mode && (
-        <div className="fixed inset-0 z-[90] flex items-start justify-center pt-[8vh] px-4" onMouseDown={() => !busy && setMode(null)}>
-          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
-          <div className="relative w-full max-w-2xl bg-white rounded-2xl border border-slate-100 card-soft max-h-[82vh] overflow-y-auto" onMouseDown={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 sticky top-0 bg-white">
+        <div className="fixed inset-0 z-[120] flex items-start justify-center pt-[8vh] px-4" onMouseDown={() => !busy && setMode(null)}>
+          <div className="fixed inset-0" style={{ background: 'rgba(15,23,42,0.55)' }} />
+          <div className="relative w-full max-w-2xl rounded-2xl border border-slate-100 card-soft max-h-[82vh] overflow-y-auto isolate" style={{ background: '#ffffff' }} onMouseDown={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 sticky top-0" style={{ background: '#ffffff' }}>
               <h2 className="text-[15px] font-extrabold text-slate-900">{mode === 'manual' ? 'Nuevo lead' : 'Importar leads desde Excel'}</h2>
               <button onClick={() => setMode(null)} className="text-slate-400 text-[13px] font-semibold">Cerrar</button>
             </div>
