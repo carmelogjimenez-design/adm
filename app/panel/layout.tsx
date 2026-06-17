@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getMyProfile } from '@/lib/queries'
 import Sidebar from './Sidebar'
 import CommandPalette from '../CommandPalette'
+import AdminOnboarding from './AdminOnboarding'
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -22,6 +23,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
       />
       <main className="flex-1 min-w-0">{children}</main>
       <CommandPalette />
+      <AdminOnboarding />
     </div>
   )
 }
