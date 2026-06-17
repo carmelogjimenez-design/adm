@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 
 const PLAYER_FIELDS =
-  'id, first_name, last_name, primary_position, secondary_position, current_club, category, stage, potential_score, target_division, graduation_year, intake_completed, created_at'
+  'id, first_name, last_name, primary_position, secondary_position, current_club, category, stage, potential_score, target_division, graduation_year, intake_completed, in_usa, created_at'
 
 export async function getMyProfile() {
   const supabase = await createClient()
@@ -35,6 +35,15 @@ export async function getPlayers() {
   return data ?? []
 }
 
+export async function getPlayersForList() {
+  const supabase = await createClient()
+  const { data: players } = await supabase.from('players').select(PLAYER_FIELDS).order('created_at', { ascending: false })
+  const { data: offers } = await supabase.from('offers').select('player_id, universities(name)').eq('status', 'accepted')
+  const uni: Record<string, string> = {}
+  for (const o of (offers ?? []) as any[]) { const u = Array.isArray(o.universities) ? o.universities[0] : o.universities; if (u?.name) uni[o.player_id] = u.name }
+  return (players ?? []).map((p: any) => ({ ...p, university: uni[p.id] ?? null }))
+}
+
 export async function getPlayerById(id: string) {
   const supabase = await createClient()
   const { data } = await supabase.from('players').select('*').eq('id', id).maybeSingle()
@@ -50,7 +59,7 @@ export async function getPlayerDocuments(playerId: string) {
 
 export async function getDashboardStats() {
   const supabase = await createClient()
-  const { data: players } = await supabase.from('players').select('id, stage, target_division, updated_at')
+  const { data: players } = await supabase.from('players').select('id, stage, target_division, updated_at, in_usa')
   const { count: universidades } = await supabase.from('universities').select('id', { count: 'exact', head: true })
   const { data: offersRows } = await supabase.from('offers').select('id, offered_at')
   const list = players ?? []
@@ -65,10 +74,11 @@ export async function getDashboardStats() {
   const now = Date.now()
   const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0)
   const ofertasMes = offers.filter(o => o.offered_at && new Date(o.offered_at) >= monthStart).length
-  const enRiesgo = list.filter(p => p.stage !== 'active' && p.updated_at && (now - new Date(p.updated_at).getTime()) > 14 * 86400000).length
+  const enUSA = list.filter(p => p.in_usa).length
+  const enRiesgo = list.filter(p => !p.in_usa && p.stage !== 'active' && p.updated_at && (now - new Date(p.updated_at).getTime()) > 14 * 86400000).length
   const conversion = list.length ? Math.round((activos / list.length) * 100) : 0
   return {
-    total: list.length, activos, enProceso: list.length - activos,
+    total: list.length, activos, enUSA, enProceso: list.length - enUSA,
     universidades: universidades ?? 0, ofertas: offers.length, ofertasMes, enRiesgo, conversion,
     byStage, byDivision,
   }

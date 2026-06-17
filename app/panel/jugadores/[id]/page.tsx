@@ -4,6 +4,7 @@ import { getPlayerById, getPlayerDocuments, getDocCategories, getPlayerPhases } 
 import StageSelect from './StageSelect'
 import AdminDocs from './AdminDocs'
 import PlayerEdit from './PlayerEdit'
+import UsaToggle from './UsaToggle'
 import PhaseTimeline from './PhaseTimeline'
 import Matching from './Matching'
 import OffersEditor from './OffersEditor'
@@ -56,6 +57,7 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
         <div className="text-right">
           <div className="text-[11px] text-slate-400 font-semibold mb-1.5">Fase del pipeline</div>
           <StageSelect playerId={p.id} current={p.stage} />
+          <div><UsaToggle playerId={p.id} current={p.in_usa} /></div>
         </div>
       </div>
 

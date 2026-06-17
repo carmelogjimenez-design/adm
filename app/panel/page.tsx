@@ -22,9 +22,9 @@ const ICONS: Record<string, React.ReactNode> = {
   alert: <><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></>,
 }
 
-function Kpi({ i, icon, label, value, hint, suffix, color }: { i: number; icon: string; label: string; value: number; hint: string; suffix?: string; color?: string }) {
-  return (
-    <div className="fade-up card-soft card-hover bg-white rounded-2xl p-5 border border-slate-100" style={{ animationDelay: `${i * 60}ms` }}>
+function Kpi({ i, icon, label, value, hint, suffix, color, href }: { i: number; icon: string; label: string; value: number; hint: string; suffix?: string; color?: string; href?: string }) {
+  const inner = (
+    <>
       <div className="w-11 h-11 rounded-xl grad-accent text-white grid place-items-center glow-brand">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className="w-[20px] h-[20px]">{ICONS[icon]}</svg>
       </div>
@@ -33,8 +33,12 @@ function Kpi({ i, icon, label, value, hint, suffix, color }: { i: number; icon: 
       </div>
       <div className="mt-2 text-[13.5px] font-semibold text-slate-600">{label}</div>
       <div className="mt-0.5 text-[11.5px] text-slate-400">{hint}</div>
-    </div>
+    </>
   )
+  const cls = "fade-up card-soft card-hover bg-white rounded-2xl p-5 border border-slate-100 block"
+  return href
+    ? <Link href={href} className={cls} style={{ animationDelay: `${i * 60}ms` }}>{inner}</Link>
+    : <div className={cls} style={{ animationDelay: `${i * 60}ms` }}>{inner}</div>
 }
 
 export default async function DashboardPage() {
@@ -51,17 +55,17 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 mt-7">
-        <Kpi i={0} icon="players" label="Jugadores totales" value={s.total} hint="en cartera" />
-        <Kpi i={1} icon="flow" label="En proceso" value={s.enProceso} hint="activos en pipeline" />
-        <Kpi i={2} icon="check" label="Clientes activos" value={s.activos} hint="con oferta en marcha" />
-        <Kpi i={3} icon="cap" label="Universidades" value={s.universidades} hint="en base de datos" />
+        <Kpi i={0} icon="players" label="Jugadores totales" value={s.total} hint="en cartera" href="/panel/jugadores" />
+        <Kpi i={1} icon="flow" label="Camino a EE. UU." value={s.enProceso} hint="en proceso de captación" href="/panel/captacion" />
+        <Kpi i={2} icon="check" label="En EE. UU." value={s.enUSA} hint="proceso cerrado · activos allí" color="#16B57C" href="/panel/jugadores?segmento=usa" />
+        <Kpi i={3} icon="cap" label="Universidades" value={s.universidades} hint="en base de datos" href="/panel/universidades" />
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 mt-4">
         <Kpi i={0} icon="conv" label="Conversión a activo" value={s.conversion} suffix="%" hint="del total en cartera" />
-        <Kpi i={1} icon="cap" label="Ofertas este mes" value={s.ofertasMes} hint="becas recibidas" />
+        <Kpi i={1} icon="cap" label="Ofertas este mes" value={s.ofertasMes} hint="becas recibidas" href="/panel/jugadores" />
         <Kpi i={2} icon="cal" label="Ofertas totales" value={s.ofertas} hint="histórico" />
-        <Kpi i={3} icon="alert" label="En riesgo" value={s.enRiesgo} hint="parados +14 días" color={s.enRiesgo > 0 ? '#EF4444' : '#0F172A'} />
+        <Kpi i={3} icon="alert" label="En riesgo" value={s.enRiesgo} hint="parados +14 días" color={s.enRiesgo > 0 ? '#EF4444' : '#0F172A'} href="/panel/captacion" />
       </div>
 
       <div className="mt-4"><TasksWidget /></div>

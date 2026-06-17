@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 
 type Player = {
   id: string; first_name: string; last_name: string; primary_position: string | null
-  current_club: string | null; stage: string; potential_score: number | null; target_division: string | null
+  current_club: string | null; stage: string; potential_score: number | null; target_division: string | null; in_usa?: boolean
 }
 const STAGES: [string, string, string][] = [
   ['lead', 'Lead detectado', '#9AA3B2'], ['first_contact', 'Primer contacto', '#3B82F6'],
@@ -23,7 +23,7 @@ const DIVS = ['Todas', 'NCAA_D1', 'NCAA_D2', 'NCAA_D3', 'NAIA', 'NJCAA']
 export default function CaptacionBoard({ players: initial }: { players: Player[] }) {
   const supabase = createClient()
   const router = useRouter()
-  const [players, setPlayers] = useState<Player[]>(initial)
+  const [players, setPlayers] = useState<Player[]>(initial.filter(p => !p.in_usa))
   const [q, setQ] = useState('')
   const [div, setDiv] = useState('Todas')
   const [dragId, setDragId] = useState<string | null>(null)
