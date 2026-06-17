@@ -1,0 +1,21 @@
+ADM - TANDA 8: Dashboard clicable + Camino/En EE.UU. + filtro universidad
+
+ORDEN:
+  1. Supabase -> SQL Editor: ejecuta  adm_tanda8.sql  (columna in_usa + trigger)
+  2. Sube a GitHub el CONTENIDO de "adm-t8" (carpetas "app" y "lib"):
+       lib/queries.ts                            (in_usa, lista, stats)
+       app/panel/page.tsx                         (dashboard clicable + EE.UU.)
+       app/panel/captacion/CaptacionBoard.tsx     (excluye jugadores En EE.UU.)
+       app/panel/jugadores/page.tsx               (lista con filtros)
+       app/panel/jugadores/JugadoresTable.tsx     (nuevo: filtros)
+       app/panel/jugadores/[id]/UsaToggle.tsx     (nuevo: marcar En EE.UU.)
+       app/panel/jugadores/[id]/page.tsx          (anade el toggle)
+  3. Commit.
+
+Que hace:
+  - Dashboard: tarjetas CLICABLES. Diferencia "Camino a EE. UU." (en proceso)
+    de "En EE. UU." (proceso cerrado, activos alli).
+  - Al completar la fase "Llegada" (o con el boton de la ficha), el jugador
+    pasa a En EE. UU. y SALE del tablero de Captacion.
+  - Jugadores: filtro por segmento (Todos / Camino / En EE.UU.) y por
+    UNIVERSIDAD de destino, mas buscador.
