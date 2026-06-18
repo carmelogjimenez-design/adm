@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
@@ -21,7 +22,10 @@ export default function NotificationBell({ align = 'right' }: { align?: 'right' 
   const [seen, setSeen] = useState<string>(new Date(0).toISOString())
   const [tasks, setTasks] = useState<any[]>([])
   const [open, setOpen] = useState(false)
-  const box = useRef<HTMLDivElement>(null)
+  const [mounted, setMounted] = useState(false)
+  const [rect, setRect] = useState<DOMRect | null>(null)
+  const btnRef = useRef<HTMLButtonElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
 
   async function load() {
     const { data: { user } } = await supabase.auth.getUser()
@@ -37,19 +41,34 @@ export default function NotificationBell({ align = 'right' }: { align?: 'right' 
     setItems(acts ?? [])
     setTasks(tks ?? [])
   }
+
   useEffect(() => {
+    setMounted(true)
     load()
     const t = setInterval(load, 20000)
-    const onClick = (e: MouseEvent) => { if (box.current && !box.current.contains(e.target as Node)) setOpen(false) }
+    const onClick = (e: MouseEvent) => {
+      const tgt = e.target as Node
+      if (btnRef.current?.contains(tgt) || panelRef.current?.contains(tgt)) return
+      setOpen(false)
+    }
     document.addEventListener('mousedown', onClick)
     return () => { clearInterval(t); document.removeEventListener('mousedown', onClick) }
   }, [])
+
+  useEffect(() => {
+    if (!open) return
+    const upd = () => { if (btnRef.current) setRect(btnRef.current.getBoundingClientRect()) }
+    upd()
+    window.addEventListener('resize', upd); window.addEventListener('scroll', upd, true)
+    return () => { window.removeEventListener('resize', upd); window.removeEventListener('scroll', upd, true) }
+  }, [open])
 
   const unreadActivity = items.filter(a => a.actor_id !== uid && new Date(a.created_at) > new Date(seen)).length
   const unread = unreadActivity + tasks.length
 
   async function toggle() {
     const willOpen = !open
+    if (willOpen && btnRef.current) setRect(btnRef.current.getBoundingClientRect())
     setOpen(willOpen)
     if (willOpen && unreadActivity > 0) {
       await supabase.rpc('mark_notifications_seen')
@@ -62,14 +81,26 @@ export default function NotificationBell({ align = 'right' }: { align?: 'right' 
     await supabase.from('tasks').update({ status: 'done' }).eq('id', id)
   }
 
+  // posicion del panel anclada a la campana (fixed, via portal)
+  const W = 320
+  let panelStyle: React.CSSProperties = { position: 'fixed', width: W, zIndex: 120 }
+  if (rect) {
+    const top = Math.round(rect.bottom + 8)
+    const left = align === 'right'
+      ? Math.max(8, Math.round(rect.right - W))
+      : Math.min(Math.round(rect.left), (typeof window !== 'undefined' ? window.innerWidth : 1024) - W - 8)
+    panelStyle = { ...panelStyle, top, left, maxHeight: '70vh', background: '#ffffff' }
+  }
+
   return (
-    <div ref={box} className="relative shrink-0">
-      <button onClick={toggle} className="relative w-9 h-9 rounded-lg grid place-items-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition">
+    <div className="shrink-0">
+      <button ref={btnRef} onClick={toggle} className="relative w-9 h-9 rounded-lg grid place-items-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className="w-[18px] h-[18px]"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
         {unread > 0 && <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full grad-accent text-white text-[10px] font-bold grid place-items-center">{unread > 9 ? '9+' : unread}</span>}
       </button>
-      {open && (
-        <div className={'absolute mt-2 w-[320px] max-h-[400px] overflow-y-auto bg-white rounded-2xl border border-slate-100 card-soft z-50 ' + (align === 'right' ? 'right-0' : 'left-0')}>
+
+      {mounted && open && rect && createPortal(
+        <div ref={panelRef} className="overflow-y-auto rounded-2xl border border-slate-100 card-soft" style={panelStyle}>
           {tasks.length > 0 && (
             <div className="border-b border-slate-100">
               <div className="px-4 pt-3 pb-1 text-[12px] font-bold uppercase tracking-[0.12em] grad-text">Para hoy</div>
@@ -94,7 +125,8 @@ export default function NotificationBell({ align = 'right' }: { align?: 'right' 
               </div>
             </div>
           ))}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
