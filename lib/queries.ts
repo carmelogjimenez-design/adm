@@ -100,11 +100,14 @@ export async function getMyDocuments(playerId: string) {
 export async function getPlayerPhases(playerId: string) {
   const supabase = await createClient()
   const { data } = await supabase.from('player_phases')
-    .select('id, status, phase_id, phases(phase_order, name, description)')
+    .select('id, status, phase_id, phases(phase_order, name, description, visible)')
     .eq('player_id', playerId)
-  return (data ?? []).slice().sort(
-    (a: any, b: any) => (a.phases?.phase_order ?? 0) - (b.phases?.phase_order ?? 0)
-  )
+  return (data ?? [])
+    .filter((r: any) => {
+      const ph = Array.isArray(r.phases) ? r.phases[0] : r.phases
+      return ph?.visible !== false
+    })
+    .slice().sort((a: any, b: any) => (a.phases?.phase_order ?? 0) - (b.phases?.phase_order ?? 0))
 }
 
 export async function getUniversities() {
@@ -119,7 +122,7 @@ export async function getUniversities() {
 export async function getOffers(playerId: string) {
   const supabase = await createClient()
   const { data } = await supabase.from('offers')
-    .select('id, scholarship_pct, scholarship_amount, family_cost_range, status, deadline, offered_at, notes, universities(name, division, state, annual_cost)')
+    .select('id, scholarship_pct, scholarship_amount, status, deadline, offered_at, notes, universities(name, division, state, annual_cost)')
     .eq('player_id', playerId)
     .order('offered_at', { ascending: false })
   return data ?? []
@@ -153,5 +156,13 @@ export async function getAlumni() {
     .select('id, first_name, last_name, primary_position, target_division, cohort_year, notes')
     .eq('is_alumni', true)
     .order('cohort_year', { ascending: false })
+  return data ?? []
+}
+
+export async function getPhases() {
+  const supabase = await createClient()
+  const { data } = await supabase.from('phases')
+    .select('id, phase_order, code, name, description, visible')
+    .order('phase_order')
   return data ?? []
 }

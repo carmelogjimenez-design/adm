@@ -13,6 +13,7 @@ const ICONS: Record<string, React.ReactNode> = {
   finance: <><path d="M3 7h18v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1zM3 7l2-3h14l2 3M12 12v4M9 14h6" /></>,
   tasks: <><path d="M9 11l2 2 4-4" /><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M8 2v4M16 2v4" /></>,
   state: <><path d="M3 12h4l2 5 4-12 2 7h6" /></>,
+  steps: <><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" /></>,
 }
 const NAV = [
   { href: '/panel', label: 'Dashboard', icon: 'dashboard' },
@@ -22,6 +23,7 @@ const NAV = [
   { href: '/panel/estado', label: 'Por estado', icon: 'state' },
   { href: '/panel/universidades', label: 'Universidades', icon: 'uni' },
   { href: '/panel/finanzas', label: 'Finanzas', icon: 'finance' },
+  { href: '/panel/pasos', label: 'Editar pasos', icon: 'steps' },
 ]
 
 export default function Sidebar({ name, role, isSuperadmin }: { name: string; role: string; isSuperadmin: boolean }) {
