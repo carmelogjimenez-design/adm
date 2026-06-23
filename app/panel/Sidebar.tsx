@@ -12,12 +12,14 @@ const ICONS: Record<string, React.ReactNode> = {
   uni: <><path d="M3 21h18M5 21V8l7-4 7 4v13M9 21v-5h6v5M9 12h.01M15 12h.01" /></>,
   finance: <><path d="M3 7h18v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1zM3 7l2-3h14l2 3M12 12v4M9 14h6" /></>,
   tasks: <><path d="M9 11l2 2 4-4" /><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M8 2v4M16 2v4" /></>,
+  state: <><path d="M3 12h4l2 5 4-12 2 7h6" /></>,
 }
 const NAV = [
   { href: '/panel', label: 'Dashboard', icon: 'dashboard' },
   { href: '/panel/captacion', label: 'Captación', icon: 'pipeline' },
   { href: '/panel/tareas', label: 'Tareas', icon: 'tasks' },
   { href: '/panel/jugadores', label: 'Jugadores', icon: 'players' },
+  { href: '/panel/estado', label: 'Por estado', icon: 'state' },
   { href: '/panel/universidades', label: 'Universidades', icon: 'uni' },
   { href: '/panel/finanzas', label: 'Finanzas', icon: 'finance' },
 ]

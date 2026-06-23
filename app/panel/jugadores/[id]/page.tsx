@@ -12,6 +12,7 @@ import FinanceEditor from './FinanceEditor'
 import ContractCard from './ContractCard'
 import CromoUploader from './CromoUploader'
 import CommitmentUploader from './CommitmentUploader'
+import LifecycleSelect from './LifecycleSelect'
 import StatsManager from '../../../estadisticas/StatsManager'
 import MessageThread from '../../../MessageThread'
 
@@ -62,6 +63,7 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
           <div className="text-[11px] text-slate-400 font-semibold mb-1.5">Fase del pipeline</div>
           <StageSelect playerId={p.id} current={p.stage} />
           <div><UsaToggle playerId={p.id} current={p.in_usa} /></div>
+          <LifecycleSelect playerId={p.id} current={p.lifecycle_status} />
         </div>
       </div>
 
