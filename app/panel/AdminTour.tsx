@@ -6,12 +6,16 @@ type Step = { route?: string; sel: string; title: string; text: string; place?: 
 const STEPS: Step[] = [
   { sel: '[data-tour="menu"]', title: 'Tu menú', text: 'Desde aquí navegas por todo el panel. Te lo enseño sección a sección.', place: 'right' },
   { route: '/panel', sel: '[data-tour="kpis"]', title: 'Tu dashboard', text: 'Tus números en vivo: conversión, ofertas del mes, jugadores camino a EE. UU. y en riesgo.', place: 'bottom' },
-  { route: '/panel', sel: '[data-tour="tasks"]', title: 'Tu día a día', text: 'Crea tareas con prioridad y fecha. Las de hoy te saltan también en la campana.', place: 'top' },
-  { route: '/panel/captacion', sel: 'a[href="/panel/captacion"]', title: 'Captación', text: 'Arrastra jugadores entre fases. Crea un lead a mano o importa un Excel. Busca al instante con ⌘K.', place: 'right' },
-  { route: '/panel/jugadores', sel: 'a[href="/panel/jugadores"]', title: 'Jugadores', text: 'Toda tu cartera. Filtra por estado (camino / en EE. UU.) y por universidad de destino.', place: 'right' },
+  { route: '/panel', sel: '[data-tour="tasks"]', title: 'Tu día a día', text: 'Crea tareas con prioridad y fecha. Las de hoy te saltan también en la campana. Tienen además su propia sección en el menú.', place: 'top' },
+  { route: '/panel/captacion', sel: 'a[href="/panel/captacion"]', title: 'Captación', text: 'El pipeline. Las tarjetas avanzan solas al cumplir hitos (contrato, pago, fases) y también puedes arrastrarlas a mano. Crea un lead o importa un Excel, y busca con ⌘K.', place: 'right' },
+  { route: '/panel/tareas', sel: 'a[href="/panel/tareas"]', title: 'Tareas', text: 'Tu gestor completo de tareas del equipo: crear, priorizar y marcar como hechas.', place: 'right' },
+  { route: '/panel/jugadores', sel: 'a[href="/panel/jugadores"]', title: 'Jugadores', text: 'Toda tu cartera. Filtra por estado y por universidad, y en la pestaña “Pasados” tienes a los alumni por años.', place: 'right' },
+  { route: '/panel/estado', sel: 'a[href="/panel/estado"]', title: 'Por estado', text: 'Contador de jugadores por estado: Activo, En activo en USA, Abandonó y Graduado. El estado lo marcas en cada ficha.', place: 'right' },
   { route: '/panel/universidades', sel: 'a[href="/panel/universidades"]', title: 'Universidades', text: 'Cientos de contactos de coaches que alimentan el matching de cada jugador.', place: 'right' },
-  { route: '/panel/finanzas', sel: 'a[href="/panel/finanzas"]', title: 'Finanzas', text: 'Control de cobros. Y en cada ficha: contrato firmable y facturas en PDF.', place: 'right' },
-  { sel: '[data-tour="bell"]', title: 'Novedades', text: 'La campana te avisa de documentos, ofertas, mensajes y lo que tienes para hoy. ¡Listo!', place: 'right' },
+  { route: '/panel/finanzas', sel: 'a[href="/panel/finanzas"]', title: 'Finanzas', text: 'Control de cobros. Y en cada ficha: contrato firmable, facturas, cromo, foto de commitment y ofertas con los gastos que ve la familia.', place: 'right' },
+  { route: '/panel/pasos', sel: 'a[href="/panel/pasos"]', title: 'Editar pasos', text: 'Cambia el nombre y la descripción de los 15 pasos del proceso, u ocúltalos. La familia lo ve al instante en “Mi camino”.', place: 'right' },
+  { route: '/panel/ayuda', sel: 'a[href="/panel/ayuda"]', title: 'Editar ayuda', text: 'Gestiona las preguntas frecuentes y las guías con links de webs que ve la familia en su sección de Ayuda.', place: 'right' },
+  { sel: '[data-tour="bell"]', title: 'Novedades', text: 'La campana te avisa de documentos, ofertas y lo que tienes para hoy. ¡Listo!', place: 'right' },
 ]
 
 export default function AdminTour() {
