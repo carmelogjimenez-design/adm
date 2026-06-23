@@ -4,7 +4,7 @@ export default function CaminoHorizontal({ phases, compact = false }: { phases: 
   const total = phases.length
   const done = phases.filter(p => p.status === 'done').length
   const pct = total ? Math.round((done / total) * 100) : 0
-  const ball = compact ? 16 : 22
+  const ball = compact ? 18 : 24
 
   return (
     <div>
@@ -23,14 +23,8 @@ export default function CaminoHorizontal({ phases, compact = false }: { phases: 
           <div className="bar-fill h-full" style={{ width: `${pct}%` }} />
         </div>
         <div className="absolute top-1/2" style={{ left: `${pct}%`, transform: 'translate(-50%,-50%)', animation: 'admRollIn 1.2s cubic-bezier(.22,1,.36,1) both' }}>
-          <div style={{ width: ball, height: ball, animation: 'admSpin 2.2s linear infinite', filter: 'drop-shadow(0 2px 3px rgba(15,30,70,.25))' }}>
-            <svg viewBox="0 0 32 32" width={ball} height={ball}>
-              <circle cx="16" cy="16" r="15" fill="#fff" stroke="#cbd5e1" strokeWidth="1" />
-              <polygon points="16,9 20,12 18.5,17 13.5,17 12,12" fill="#0f172a" />
-              <polygon points="16,2 18,7 16,9 12,12 9,9" fill="#0f172a" opacity="0.85" />
-              <polygon points="16,2 14,7 16,9 20,12 23,9" fill="#0f172a" opacity="0.85" />
-              <path d="M16 9 L12 12 M16 9 L20 12 M13.5 17 L11 21 M18.5 17 L21 21" stroke="#0f172a" strokeWidth="1" fill="none" opacity="0.6" />
-            </svg>
+          <div style={{ width: ball, height: ball, display: 'grid', placeItems: 'center', animation: 'admSpin 2.2s linear infinite', filter: 'drop-shadow(0 2px 3px rgba(15,30,70,.25))' }}>
+            <span style={{ fontSize: ball, lineHeight: 1 }}>⚽</span>
           </div>
         </div>
       </div>
