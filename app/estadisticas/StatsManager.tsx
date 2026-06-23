@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
-type S = { id: string; season: string; matches_played: number; minutes: number; goals: number; assists: number; clean_sheets: number; yellow_cards: number; red_cards: number; call_ups: number; captaincies: number }
+type S = { id: string; season: string; team_name: string | null; matches_played: number; minutes: number; goals: number; assists: number; clean_sheets: number; yellow_cards: number; red_cards: number; call_ups: number; captaincies: number }
 const FIELDS: [keyof S, string][] = [
   ['matches_played', 'Partidos'], ['minutes', 'Minutos'], ['goals', 'Goles'], ['assists', 'Asistencias'],
   ['clean_sheets', 'Porterías a 0'], ['yellow_cards', 'Amarillas'], ['red_cards', 'Rojas'], ['call_ups', 'Convocatorias'], ['captaincies', 'Capitanías'],
 ]
-const empty = { season: '', matches_played: 0, minutes: 0, goals: 0, assists: 0, clean_sheets: 0, yellow_cards: 0, red_cards: 0, call_ups: 0, captaincies: 0 }
+const empty = { season: '', team_name: '', matches_played: 0, minutes: 0, goals: 0, assists: 0, clean_sheets: 0, yellow_cards: 0, red_cards: 0, call_ups: 0, captaincies: 0 }
 
 export default function StatsManager({ playerId, compact = false }: { playerId: string; compact?: boolean }) {
   const supabase = createClient()
@@ -27,13 +27,13 @@ export default function StatsManager({ playerId, compact = false }: { playerId: 
 
   function startNew() { setEditing(null); setF({ ...empty }); setOpen(true) }
   function startEdit(r: S) { setEditing(r.id); setF({ ...r }); setOpen(true) }
-  const set = (k: string, v: string) => setF((s: any) => ({ ...s, [k]: k === 'season' ? v : (v === '' ? 0 : Number(v)) }))
+  const set = (k: string, v: string) => setF((s: any) => ({ ...s, [k]: (k === 'season' || k === 'team_name') ? v : (v === '' ? 0 : Number(v)) }))
 
   async function save() {
     if (!f.season?.trim()) { alert('Indica la temporada (ej. 2025-26)'); return }
     setBusy(true)
     const { error } = await supabase.rpc('upsert_player_stats', {
-      p_player: playerId, p_season: f.season.trim(),
+      p_player: playerId, p_season: f.season.trim(), p_team: (f.team_name || '').trim() || null,
       p_matches: f.matches_played, p_minutes: f.minutes, p_goals: f.goals, p_assists: f.assists,
       p_clean_sheets: f.clean_sheets, p_yellow: f.yellow_cards, p_red: f.red_cards, p_call_ups: f.call_ups, p_captaincies: f.captaincies,
     })
@@ -60,8 +60,12 @@ export default function StatsManager({ playerId, compact = false }: { playerId: 
 
       {open && (
         <div className="p-3 rounded-xl bg-slate-50/70 mb-4">
-          <label className="block mb-2.5"><span className="block text-[11px] font-semibold text-slate-500 mb-1">Temporada</span>
-            <input className={inp + ' max-w-[200px]'} placeholder="2025-26" value={f.season} onChange={e => set('season', e.target.value)} disabled={!!editing} /></label>
+          <div className="flex gap-2.5 mb-2.5 flex-wrap">
+            <label className="block"><span className="block text-[11px] font-semibold text-slate-500 mb-1">Temporada</span>
+              <input className={inp + ' max-w-[160px]'} placeholder="2025-26" value={f.season} onChange={e => set('season', e.target.value)} disabled={!!editing} /></label>
+            <label className="block flex-1 min-w-[180px]"><span className="block text-[11px] font-semibold text-slate-500 mb-1">Equipo</span>
+              <input className={inp} placeholder="Nombre del equipo / club" value={f.team_name || ''} onChange={e => set('team_name', e.target.value)} /></label>
+          </div>
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-2.5">
             {FIELDS.map(([k, label]) => (
               <label key={k} className="block"><span className="block text-[10.5px] font-semibold text-slate-500 mb-1">{label}</span>
@@ -79,7 +83,10 @@ export default function StatsManager({ playerId, compact = false }: { playerId: 
           {rows.map(r => (
             <div key={r.id} className="rounded-xl border border-slate-100 p-3.5">
               <div className="flex items-center justify-between mb-2.5">
-                <span className="text-[14px] font-extrabold text-slate-900">{r.season}</span>
+                <div>
+                  <span className="text-[14px] font-extrabold text-slate-900">{r.season}</span>
+                  {r.team_name && <span className="ml-2 text-[12px] font-semibold text-slate-400">{r.team_name}</span>}
+                </div>
                 <div className="flex gap-2">
                   <button onClick={() => startEdit(r)} className="text-[11.5px] font-semibold grad-text">Editar</button>
                   <button onClick={() => del(r.id)} className="text-[11.5px] font-semibold text-red-500">Eliminar</button>

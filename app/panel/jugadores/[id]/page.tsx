@@ -10,6 +10,7 @@ import Matching from './Matching'
 import OffersEditor from './OffersEditor'
 import FinanceEditor from './FinanceEditor'
 import ContractCard from './ContractCard'
+import CromoUploader from './CromoUploader'
 import StatsManager from '../../../estadisticas/StatsManager'
 import MessageThread from '../../../MessageThread'
 
@@ -72,6 +73,7 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
 
         <OffersEditor playerId={p.id} />
 
+        <CromoUploader playerId={p.id} initialPath={p.card_photo_path} />
         <ContractCard playerId={p.id} player={p} />
 
         <FinanceEditor playerId={p.id} />

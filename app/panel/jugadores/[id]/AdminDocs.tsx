@@ -69,6 +69,13 @@ export default function AdminDocs({ playerId, categories, initialDocs }: { playe
     if (d.external_url) { window.open(d.external_url, '_blank'); return }
     if (d.storage_path) { const { data } = await supabase.storage.from('documentos').createSignedUrl(d.storage_path, 3600); if (data?.signedUrl) window.open(data.signedUrl, '_blank') }
   }
+  async function download(d: Doc) {
+    if (d.external_url) { window.open(d.external_url, '_blank'); return }
+    if (d.storage_path) {
+      const { data } = await supabase.storage.from('documentos').createSignedUrl(d.storage_path, 3600, { download: true })
+      if (data?.signedUrl) window.open(data.signedUrl, '_blank')
+    }
+  }
 
   const list = onlyPending ? categories.filter(c => !docs[c.id]) : categories
   const done = categories.filter(c => docs[c.id]).length
@@ -91,7 +98,12 @@ export default function AdminDocs({ playerId, categories, initialDocs }: { playe
                   <span className="text-[13.5px] font-bold text-slate-900">{cat.name}</span>
                   {!cat.required && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-400">Opcional</span>}
                 </div>
-                {doc && <button onClick={() => view(doc)} className="text-[11.5px] font-semibold grad-text mt-0.5">Ver {doc.external_url ? 'enlace' : 'archivo'} →</button>}
+                {doc && (
+                  <div className="flex items-center gap-3 mt-0.5">
+                    <button onClick={() => view(doc)} className="text-[11.5px] font-semibold grad-text">Ver {doc.external_url ? 'enlace' : 'archivo'} →</button>
+                    {doc.storage_path && <button onClick={() => download(doc)} className="text-[11.5px] font-semibold text-slate-500 hover:text-slate-700">Descargar</button>}
+                  </div>
+                )}
               </div>
               <span className={'text-[10.5px] font-bold px-2 py-0.5 rounded-full ' + st.cls}>{st.label}</span>
               <input ref={el => { inputs.current[cat.id] = el }} type="file" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) uploadFile(cat, f) }} />

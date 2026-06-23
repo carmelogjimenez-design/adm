@@ -165,8 +165,9 @@ export default function DocCenter({
                         </div>
                       )})()}
                       {doc && (
-                        <button onClick={() => view(doc)} className="text-[12px] font-semibold grad-text mt-1.5 inline-flex items-center gap-1">
-                          Ver {doc.external_url ? 'enlace' : 'archivo'} →
+                        <button onClick={() => view(doc)} className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#0F5EFF]/30 text-[#0F5EFF] text-[12px] font-bold hover:bg-[#0F5EFF]/5">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" /><circle cx="12" cy="12" r="3" /></svg>
+                          Ver {doc.external_url ? 'enlace' : 'documento'}
                         </button>
                       )}
                     </div>

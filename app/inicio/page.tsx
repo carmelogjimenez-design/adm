@@ -93,6 +93,12 @@ export default async function InicioPage() {
       ? { eyebrow: 'Tu siguiente paso', title: `Sube: ${missingDoc.name}`, cta: 'Subir documento', href: '/documentos' }
       : { eyebrow: 'Tu siguiente paso', title: current?.phases?.name ?? 'Sigue tu camino', cta: 'Ver mi camino', href: '/mi-camino' }
 
+  let cromoUrl: string | null = null
+  if (player?.card_photo_path) {
+    const { data: cromo } = await supabase.storage.from('documentos').createSignedUrl(player.card_photo_path, 3600)
+    cromoUrl = cromo?.signedUrl ?? null
+  }
+
   const story = liveOffers.length
     ? `¡El sueño está más cerca, ${name}! Ya hay universidades interesadas.`
     : journeyPct === 0 ? `Cada gran fichaje empieza con un primer paso. Vamos a por ello, ${name}.`
@@ -106,6 +112,11 @@ export default async function InicioPage() {
       <div className="max-w-3xl mx-auto px-5 py-7">
         {/* HERO */}
         <div className="fade-up card-soft bg-white rounded-3xl p-6 border border-slate-100 flex items-center gap-6 flex-wrap">
+          {cromoUrl && (
+            <div className="w-[96px] h-[124px] rounded-2xl overflow-hidden border border-slate-100 shrink-0 shadow-sm">
+              <img src={cromoUrl} alt={`Cromo de ${name}`} className="w-full h-full object-cover" />
+            </div>
+          )}
           <div className="flex-1 min-w-[210px]">
             <div className="text-[11px] font-bold uppercase tracking-[0.16em] grad-text inline-block mb-1.5">El camino de {name} a EE. UU.</div>
             <h1 className="text-[26px] font-extrabold tracking-tight text-slate-900 leading-tight">{story}</h1>

@@ -4,7 +4,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import NotificationBell from './NotificationBell'
 
-const NAV: [string, string][] = [['/inicio', 'Inicio'], ['/mi-camino', 'Mi camino'], ['/documentos', 'Documentos'], ['/estadisticas', 'Estadísticas'], ['/pagos', 'Pagos'], ['/mensajes', 'Mensajes'], ['/ayuda', 'Ayuda']]
+const NAV: [string, string][] = [['/inicio', 'Inicio'], ['/mi-camino', 'Mi camino'], ['/documentos', 'Documentos'], ['/estadisticas', 'Estadísticas'], ['/pagos', 'Pagos'], ['/ayuda', 'Ayuda']]
 
 export default function FamilyNav() {
   const pathname = usePathname()
