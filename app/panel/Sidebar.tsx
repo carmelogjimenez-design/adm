@@ -14,6 +14,7 @@ const ICONS: Record<string, React.ReactNode> = {
   tasks: <><path d="M9 11l2 2 4-4" /><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M8 2v4M16 2v4" /></>,
   state: <><path d="M3 12h4l2 5 4-12 2 7h6" /></>,
   steps: <><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" /></>,
+  help: <><circle cx="12" cy="12" r="9" /><path d="M9.5 9a2.5 2.5 0 0 1 4.5 1.5c0 1.5-2 2-2 3.5M12 17h.01" /></>,
 }
 const NAV = [
   { href: '/panel', label: 'Dashboard', icon: 'dashboard' },
@@ -24,6 +25,7 @@ const NAV = [
   { href: '/panel/universidades', label: 'Universidades', icon: 'uni' },
   { href: '/panel/finanzas', label: 'Finanzas', icon: 'finance' },
   { href: '/panel/pasos', label: 'Editar pasos', icon: 'steps' },
+  { href: '/panel/ayuda', label: 'Editar ayuda', icon: 'help' },
 ]
 
 export default function Sidebar({ name, role, isSuperadmin }: { name: string; role: string; isSuperadmin: boolean }) {

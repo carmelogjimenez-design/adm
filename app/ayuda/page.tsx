@@ -1,18 +1,11 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { getMyProfile, getDocCategories } from '@/lib/queries'
+import { getMyProfile, getDocCategories, getFaqs, getHelpLinks } from '@/lib/queries'
 import FamilyNav from '../FamilyNav'
-import { GUIAS, GUIAS_GENERAL } from '../guias'
+import { GUIAS } from '../guias'
 
 type QA = { q: string; a: string }
-const FAQ: QA[] = [
-  { q: '¿Qué diferencia hay entre Junior College (JUCO), NAIA y NCAA?', a: 'JUCO son universidades de 2 años, más económicas, con requisitos de inglés más bajos y un buen puente hacia universidades de 4 años. NAIA y NCAA (D1, D2, D3) son de 4 años; D1 es la máxima categoría (más exigente académica y deportivamente). Tienes el detalle completo en la guía "Preguntas frecuentes".' },
-  { q: '¿Qué nivel de inglés necesito: Duolingo, TOEFL o SAT?', a: 'La mayoría empieza por el Duolingo English Test (más rápido y barato); algunas universidades piden TOEFL. El SAT solo es necesario en ciertas universidades. Te orientamos según tus objetivos. Lo tienes ampliado en la guía de FAQ.' },
-  { q: '¿Qué incluye la beca?', a: 'Depende de la universidad y de la categoría. Puede cubrir matrícula, alojamiento, comida o una parte. En la guía de FAQ explicamos cómo funcionan las becas y los límites por categoría.' },
-  { q: '¿Cómo es el proceso del visado?', a: 'Una vez admitido, la universidad emite el I-20. Con él se solicita el visado de estudiante F-1 (cita en la embajada, pago de tasas, entrevista). Tienes el paso a paso en la guía "Proceso de visado".' },
-  { q: '¿Qué me llevo y qué compro ya en EE. UU.?', a: 'Hay cosas que conviene llevar de casa y otras que es mejor comprar allí (móvil, ciertos enseres). Lo detallamos en la guía "El viaje a EE. UU.".' },
-]
 
 function Faq({ items }: { items: QA[] }) {
   return (
@@ -40,6 +33,7 @@ export default async function AyudaPage() {
 
   const categories = (await getDocCategories()) as any[]
   const withGuide = categories.filter(c => GUIAS[c.code]?.info || GUIAS[c.code]?.info_naia || GUIAS[c.code]?.ejemplo)
+  const [faqs, links] = await Promise.all([getFaqs(), getHelpLinks()])
 
   return (
     <div className="app-aurora min-h-screen bg-[#FBFCFE]">
@@ -54,15 +48,15 @@ export default async function AyudaPage() {
         {/* guias esenciales */}
         <h2 className="fade-up text-[12px] font-bold uppercase tracking-[0.14em] grad-text inline-block mt-7 mb-3">Guías esenciales</h2>
         <div className="fade-up grid grid-cols-1 sm:grid-cols-2 gap-3" style={{ animationDelay: '60ms' }}>
-          {GUIAS_GENERAL.map((g, i) => (
-            <a key={i} href={g.href} target="_blank" rel="noopener"
+          {links.map((g: any) => (
+            <a key={g.id} href={g.url || '#'} target="_blank" rel="noopener"
               className="card-soft card-hover bg-white rounded-2xl p-4 border border-slate-100 flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl grad-accent text-white grid place-items-center shrink-0 glow-brand">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-5 h-5"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" /><path d="M14 3v5h5" /></svg>
               </div>
               <div className="min-w-0">
                 <div className="text-[14px] font-bold text-slate-900">{g.title}</div>
-                <div className="text-[12px] text-slate-400">{g.sub}</div>
+                <div className="text-[12px] text-slate-400">{g.subtitle}</div>
               </div>
             </a>
           ))}
@@ -70,7 +64,7 @@ export default async function AyudaPage() {
 
         {/* FAQ */}
         <h2 className="fade-up text-[12px] font-bold uppercase tracking-[0.14em] grad-text inline-block mt-8 mb-3">Preguntas frecuentes</h2>
-        <div className="fade-up" style={{ animationDelay: '60ms' }}><Faq items={FAQ} /></div>
+        <div className="fade-up" style={{ animationDelay: '60ms' }}><Faq items={faqs.map((x: any) => ({ q: x.question, a: x.answer }))} /></div>
 
         {/* guias por documento */}
         <h2 className="fade-up text-[12px] font-bold uppercase tracking-[0.14em] grad-text inline-block mt-8 mb-3">Guías por documento</h2>

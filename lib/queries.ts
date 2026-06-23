@@ -166,3 +166,24 @@ export async function getPhases() {
     .order('phase_order')
   return data ?? []
 }
+
+export async function getFaqs() {
+  const supabase = await createClient()
+  const { data } = await supabase.from('faqs').select('id, question, answer').eq('visible', true).order('sort_order')
+  return data ?? []
+}
+export async function getHelpLinks() {
+  const supabase = await createClient()
+  const { data } = await supabase.from('help_links').select('id, title, subtitle, url').eq('visible', true).order('sort_order')
+  return data ?? []
+}
+export async function getAllFaqs() {
+  const supabase = await createClient()
+  const { data } = await supabase.from('faqs').select('id, question, answer, sort_order, visible').order('sort_order')
+  return data ?? []
+}
+export async function getAllHelpLinks() {
+  const supabase = await createClient()
+  const { data } = await supabase.from('help_links').select('id, title, subtitle, url, sort_order, visible').order('sort_order')
+  return data ?? []
+}
