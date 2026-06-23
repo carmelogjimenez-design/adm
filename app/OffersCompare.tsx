@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 const DIV: Record<string, string> = { NCAA_D1: 'NCAA D1', NCAA_D2: 'NCAA D2', NCAA_D3: 'NCAA D3', NAIA: 'NAIA', NJCAA: 'JUCO' }
-const usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US')
 
 export default function OffersCompare({ offers }: { offers: any[] }) {
   const supabase = createClient()
@@ -25,8 +24,7 @@ export default function OffersCompare({ offers }: { offers: any[] }) {
     <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
       {offers.map(o => {
         const uni = Array.isArray(o.universities) ? o.universities[0] : o.universities
-        const pct = o.scholarship_pct
-        const net = uni?.annual_cost != null && pct != null ? uni.annual_cost * (1 - pct / 100) : null
+        const gastos = o.family_cost_range && String(o.family_cost_range).trim() ? String(o.family_cost_range).trim() : null
         const isAcc = o.status === 'accepted'
         return (
           <div key={o.id} className={'shrink-0 w-[240px] rounded-2xl border p-4 card-soft ' + (isAcc ? 'border-[#16B57C] ring-2 ring-[#39E6A5]/30' : 'border-slate-100')}>
@@ -39,11 +37,13 @@ export default function OffersCompare({ offers }: { offers: any[] }) {
             <div className="text-[15px] font-extrabold text-slate-900 mt-2.5 leading-tight">{uni?.name ?? 'Universidad'}</div>
             <div className="text-[11.5px] text-slate-400">{uni?.division ? DIV[uni.division] : ''}{uni?.state ? ` · ${uni.state}` : ''}</div>
 
-            <div className="mt-3 space-y-1.5">
-              <Row k="Beca" v={pct != null ? `${pct}%` : '—'} hot />
-              <Row k="Coste anual" v={uni?.annual_cost != null ? usd(uni.annual_cost) : '—'} />
-              <Row k="Coste estimado" v={net != null ? usd(net) : '—'} />
-              <Row k="Fecha límite" v={o.deadline ? new Date(o.deadline).toLocaleDateString('es-ES') : '—'} />
+            <div className="mt-3">
+              <div className="rounded-xl bg-slate-50 px-3 py-2.5">
+                <div className="text-[10.5px] font-bold uppercase tracking-wide text-slate-400">Gastos estimados</div>
+                <div className="text-[15px] font-extrabold grad-text mt-0.5">{gastos ?? 'Te lo detalla tu asesor'}</div>
+                <div className="text-[10.5px] text-slate-400 mt-0.5">aproximado por año</div>
+              </div>
+              <div className="mt-2"><Row k="Fecha límite" v={o.deadline ? new Date(o.deadline).toLocaleDateString('es-ES') : '—'} /></div>
             </div>
 
             {accepted ? (
