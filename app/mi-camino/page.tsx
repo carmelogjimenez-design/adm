@@ -40,6 +40,22 @@ export default async function MiCaminoPage() {
   const phases = (await getPlayerPhases(player.id)) as any[]
   const total = phases.length
   const done = phases.filter(p => p.status === 'done').length
+  const name = player?.first_name || ''
+  const isComplete = total > 0 && done === total
+  let commitUrl: string | null = null
+  let chosenUni: { name: string; division: string | null; photo_url: string | null } | null = null
+  if (isComplete) {
+    if (player.commitment_photo_path) {
+      const { data: c } = await supabase.storage.from('documentos').createSignedUrl(player.commitment_photo_path, 3600)
+      commitUrl = c?.signedUrl ?? null
+    }
+    const { data: off } = await supabase.from('offers')
+      .select('offered_at, universities(name, division, photo_url)')
+      .eq('player_id', player.id).eq('status', 'accepted')
+      .order('offered_at', { ascending: false }).limit(1).maybeSingle()
+    const u: any = off?.universities ? (Array.isArray(off.universities) ? off.universities[0] : off.universities) : null
+    if (u) chosenUni = u
+  }
 
   return (
     <div className="app-aurora min-h-screen bg-[#FBFCFE]">
@@ -50,6 +66,29 @@ export default async function MiCaminoPage() {
           <h1 className="text-[26px] font-extrabold tracking-tight text-slate-900">Mi camino</h1>
           <p className="text-slate-500 text-[15px] mt-1.5">Desde la captación hasta tu llegada al campus en EE. UU. · {done} de {total} completadas</p>
         </div>
+
+        {isComplete && (
+          <div className="fade-up mt-6 rounded-3xl overflow-hidden card-soft" style={{ background: 'linear-gradient(135deg,#0F5EFF,#16B57C)' }}>
+            <div className="p-6 sm:p-7 text-white">
+              <div className="text-[11px] font-bold uppercase tracking-[0.18em] opacity-90">Commitment</div>
+              <h2 className="text-[22px] sm:text-[26px] font-extrabold tracking-tight mt-1">{name ? `¡${name} lo ha conseguido!` : '¡Lo has conseguido!'} 🎉</h2>
+              <div className="mt-4 flex items-center gap-4 flex-wrap">
+                {commitUrl && <img src={commitUrl} alt="Commitment" className="w-[120px] h-[150px] object-cover rounded-2xl border-2 border-white/40 shadow-lg" />}
+                <div className="flex items-center gap-3 bg-white/15 rounded-2xl px-4 py-3">
+                  {chosenUni?.photo_url
+                    ? <img src={chosenUni.photo_url} alt="" className="w-12 h-12 rounded-xl object-cover bg-white" />
+                    : <div className="w-12 h-12 rounded-xl bg-white/20 grid place-items-center text-[18px]">🎓</div>}
+                  <div>
+                    <div className="text-[11px] uppercase tracking-wide opacity-80 font-semibold">Universidad elegida</div>
+                    <div className="text-[18px] font-extrabold">{chosenUni?.name ?? 'Tu universidad'}</div>
+                    {chosenUni?.division && <div className="text-[12px] opacity-90 font-semibold">{chosenUni.division.replace('NCAA_', '').replace('NJCAA', 'JUCO')}</div>}
+                  </div>
+                </div>
+              </div>
+              {!commitUrl && <p className="text-[12.5px] opacity-90 mt-3">La foto de commitment la subirá tu asesor ADM muy pronto. 📸</p>}
+            </div>
+          </div>
+        )}
 
         <div className="fade-up card-soft bg-white rounded-2xl p-5 border border-slate-100 mt-6">
           <CaminoHorizontal phases={phases as any} />
